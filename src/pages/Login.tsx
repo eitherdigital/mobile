@@ -84,7 +84,7 @@ function Login() {
 							/>
 						</FormItem>
 						<FormItem>
-							<Button size="l" onClick={onSubmit}>
+							<Button size="l" onClick={onSubmit} stretched>
 								Войти
 							</Button>
 						</FormItem>

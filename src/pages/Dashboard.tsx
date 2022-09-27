@@ -2,22 +2,28 @@ import React from "react";
 import {
 	PanelHeader,
 	ScreenSpinner,
-	CardGrid,
-	ContentCard,
+	PanelHeaderButton,
 	Group,
+	Header,
+	CardGrid,
 	Card,
 	Text,
+	ContentCard,
+	Link,
 } from "@vkontakte/vkui";
+import { Icon28SettingsOutline, Icon28ErrorOutline } from "@vkontakte/icons";
 import { getNews } from "../hooks/Api";
-import { Icon28ErrorOutline } from "@vkontakte/icons";
 import moment from "moment";
 import "moment/locale/ru";
 import parse from "html-react-parser";
 
-function News() {
-	moment.locale("ru");
+function Dashboard({ setActiveModal, setActiveStory }: any) {
 	const [isLoading, setIsLoading] = React.useState<boolean>(false);
 	const [news, setNews] = React.useState<any>(null);
+	const [releases, setReleases] = React.useState<any>(null);
+
+	moment.locale("ru");
+
 	React.useEffect(() => {
 		const getData = async () => {
 			setIsLoading(true);
@@ -30,14 +36,28 @@ function News() {
 		};
 		getData();
 	}, []);
+
 	return (
 		<>
 			{isLoading && <ScreenSpinner state="loading" />}
-			<PanelHeader>Новости</PanelHeader>
-			<Group>
+			<PanelHeader
+				before={
+					<PanelHeaderButton
+						aria-label="Настройки"
+						onClick={() => {
+							setActiveModal("settings");
+						}}
+					>
+						<Icon28SettingsOutline />
+					</PanelHeaderButton>
+				}
+			>
+				Главная
+			</PanelHeader>
+			<Group header={<Header mode="secondary">Новости</Header>}>
 				{news !== null && (
 					<CardGrid size="l">
-						{news.length === 0 && (
+						{(news.length === 0 && (
 							<Card mode="shadow" style={{ margin: "20px" }}>
 								<div className="either__noData-stack">
 									<Icon28ErrorOutline />
@@ -46,14 +66,21 @@ function News() {
 									</Text>
 								</div>
 							</Card>
+						)) || (
+							<>
+								<ContentCard
+									header={news[0].title}
+									text={parse(news[0].body)}
+									subtitle={moment(news[0].created_at).format("LL")}
+								/>
+								<Link
+									style={{ marginTop: "8px" }}
+									onClick={() => setActiveStory("news")}
+								>
+									Показать все
+								</Link>
+							</>
 						)}
-						{news.map((item: any) => (
-							<ContentCard
-								header={item.title}
-								text={parse(item.body)}
-								subtitle={moment(item.created_at).format("LL")}
-							/>
-						))}
 					</CardGrid>
 				)}
 			</Group>
@@ -61,4 +88,4 @@ function News() {
 	);
 }
 
-export default News;
+export default Dashboard;

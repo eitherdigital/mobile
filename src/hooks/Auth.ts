@@ -9,13 +9,18 @@ interface UserData {
 	username: string;
 }
 
-const Store = window.localStorage;
+const Store = window.sessionStorage;
 
 function setAuth(user: UserData) {
 	Store.setItem(
 		"auth-data",
 		JSON.stringify({
 			accessToken: user.accessToken,
+			email: user.email,
+			isLabel: user.isLabel,
+			isSubkabinet: user.isSubkabinet,
+			name: user.name,
+			username: user.username,
 		})
 	);
 }

@@ -28,11 +28,15 @@ import { getAuth, updateAuth } from "./hooks/Auth";
 import Login from "./pages/Login";
 import { isBrowser } from "react-device-detect";
 import News from "./pages/News";
+import Dashboard from "./pages/Dashboard";
+import Modals from "./components/Modals";
 
 const Authed = withAdaptivity(
 	({ viewWidth }: any) => {
 		const platform = usePlatform();
-		const [activeStory, setActiveStory] = React.useState("dashboard");
+		const isMobile = viewWidth <= ViewWidth.MOBILE;
+		const [activeModal, setActiveModal] = React.useState<string | null>(null);
+		const [activeStory, setActiveStory] = React.useState<string>("dashboard");
 		const onStoryChange = (e: any) =>
 			setActiveStory(e.currentTarget.dataset.story);
 		const isDesktop = viewWidth >= ViewWidth.TABLET;
@@ -42,6 +46,14 @@ const Authed = withAdaptivity(
 			<SplitLayout
 				header={hasHeader && <PanelHeader separator={false} />}
 				style={{ justifyContent: "center" }}
+				modal={
+					<Modals
+						platform={platform}
+						onClose={() => setActiveModal(null)}
+						activeModal={activeModal}
+						isMobile={isMobile}
+					/>
+				}
 			>
 				{isDesktop && (
 					<SplitCol fixed width={280} maxWidth={280}>
@@ -195,12 +207,10 @@ const Authed = withAdaptivity(
 					>
 						<View id="dashboard" activePanel="dashboard">
 							<Panel id="dashboard">
-								<PanelHeader>Главная</PanelHeader>
-								<Group style={{ height: "1000px" }}>
-									<Placeholder
-										icon={<Icon28HomeOutline width={56} height={56} />}
-									/>
-								</Group>
+								<Dashboard
+									setActiveModal={setActiveModal}
+									setActiveStory={setActiveStory}
+								/>
 							</Panel>
 						</View>
 						<View id="catalog" activePanel="catalog">

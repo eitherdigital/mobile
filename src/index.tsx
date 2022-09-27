@@ -4,12 +4,14 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { ConfigProvider, AdaptivityProvider, AppRoot } from "@vkontakte/vkui";
 import "@vkontakte/vkui/dist/vkui.css";
+import { getTheme } from "./hooks/Theme";
+import "./css/Either.css";
 
 const root = ReactDOM.createRoot(
 	document.getElementById("root") as HTMLElement
 );
 root.render(
-	<ConfigProvider>
+	<ConfigProvider appearance={getTheme()}>
 		<AdaptivityProvider>
 			<AppRoot>
 				<App />
