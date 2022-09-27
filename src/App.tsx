@@ -27,6 +27,7 @@ import {
 import { getAuth, updateAuth } from "./hooks/Auth";
 import Login from "./pages/Login";
 import { isBrowser } from "react-device-detect";
+import News from "./pages/News";
 
 const Authed = withAdaptivity(
 	({ viewWidth }: any) => {
@@ -236,12 +237,7 @@ const Authed = withAdaptivity(
 						</View>
 						<View id="news" activePanel="news">
 							<Panel id="news">
-								<PanelHeader>Новости</PanelHeader>
-								<Group style={{ height: "1000px" }}>
-									<Placeholder
-										icon={<Icon28NewsfeedLinesOutline width={56} height={56} />}
-									/>
-								</Group>
+								<News />
 							</Panel>
 						</View>
 					</Epic>
