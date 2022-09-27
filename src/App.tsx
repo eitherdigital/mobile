@@ -258,7 +258,7 @@ const App = () => {
 	const [auth, setAuth] = React.useState<boolean | null>(null);
 
 	React.useEffect(() => {
-		if (isBrowser) window.location.href = "lk.either.digital";
+		if (isBrowser) window.location.href = "https://lk.either.digital";
 		const checkAuth = async () => {
 			const check = await getAuth();
 
