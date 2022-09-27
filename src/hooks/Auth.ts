@@ -9,7 +9,7 @@ interface UserData {
 	username: string;
 }
 
-const Store = window.sessionStorage;
+const Store = window.localStorage;
 
 function setAuth(user: UserData) {
 	Store.setItem(
