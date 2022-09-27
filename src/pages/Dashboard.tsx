@@ -41,7 +41,7 @@ function Dashboard({ setActiveModal, setActiveStory }: any) {
 		<>
 			{isLoading && <ScreenSpinner state="loading" />}
 			<PanelHeader
-				before={
+				after={
 					<PanelHeaderButton
 						aria-label="Настройки"
 						onClick={() => {
