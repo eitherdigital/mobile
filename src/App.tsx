@@ -26,6 +26,7 @@ import {
 } from "@vkontakte/icons";
 import { getAuth, updateAuth } from "./hooks/Auth";
 import Login from "./pages/Login";
+import { isBrowser } from "react-device-detect";
 
 const Authed = withAdaptivity(
 	({ viewWidth }: any) => {
@@ -257,6 +258,7 @@ const App = () => {
 	const [auth, setAuth] = React.useState<boolean | null>(null);
 
 	React.useEffect(() => {
+		if (isBrowser) window.location.href = "lk.either.digital";
 		const checkAuth = async () => {
 			const check = await getAuth();
 
