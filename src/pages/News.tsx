@@ -37,7 +37,7 @@ function News() {
 						<ContentCard
 							header={item.title}
 							text={parse(item.body)}
-							subtitle={moment(item.date).format("LL")}
+							subtitle={moment(item.created_at).format("LL")}
 						/>
 					))}
 				</CardGrid>
