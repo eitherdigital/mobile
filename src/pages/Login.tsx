@@ -67,6 +67,7 @@ function Login() {
 							<Input
 								type="email"
 								name="email"
+								disabled={isLoading}
 								value={email}
 								onChange={(e: any) => setEmail(e.currentTarget.value)}
 							/>
@@ -79,12 +80,13 @@ function Login() {
 							<Input
 								type="password"
 								name="password"
+								disabled={isLoading}
 								value={password}
 								onChange={(e: any) => setPassword(e.currentTarget.value)}
 							/>
 						</FormItem>
 						<FormItem>
-							<Button size="l" onClick={onSubmit} stretched>
+							<Button size="l" onClick={onSubmit} stretched loading={isLoading}>
 								Войти
 							</Button>
 						</FormItem>
