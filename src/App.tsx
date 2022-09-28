@@ -33,6 +33,7 @@ import Dashboard from "./pages/Dashboard";
 import Modals from "./components/Modals";
 import { ReleaseType } from "./components/Release";
 import NoData from "./components/NoData";
+import Catalog from "./pages/Catalog";
 
 const Authed = withAdaptivity(
 	({ viewWidth }: any) => {
@@ -226,14 +227,12 @@ const Authed = withAdaptivity(
 						</View>
 						<View id="catalog" activePanel="catalog">
 							<Panel id="catalog">
-								<PanelHeader>Каталог</PanelHeader>
-								<Group style={{ height: "1000px" }}>
-									<Placeholder
-										icon={
-											<Icon28NewsfeedMusicNoteOutline width={56} height={56} />
-										}
-									/>
-								</Group>
+								<Catalog
+									setActiveModal={setActiveModal}
+									platform={platform}
+									setRelease={setRelease}
+									setPopout={setPopout}
+								/>
 							</Panel>
 						</View>
 						<View id="analytics" activePanel="analytics">

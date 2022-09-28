@@ -50,4 +50,36 @@ async function deleteRelease(id: number) {
 	return res;
 }
 
-export { getNews, getLastReleases, deleteRelease };
+async function getReleases() {
+	const user = getUser();
+	if (!user) return { error: "not auth" };
+
+	const { data: res } = await axios.get(
+		`https://api.either.digital/user/get_releases?type=ok`,
+		{
+			headers: {
+				authorization: `Bearer ${user.accessToken}`,
+			},
+		}
+	);
+
+	return res;
+}
+
+async function getModeration() {
+	const user = getUser();
+	if (!user) return { error: "not auth" };
+
+	const { data: res } = await axios.get(
+		`https://api.either.digital/user/get_releases?type=moderation`,
+		{
+			headers: {
+				authorization: `Bearer ${user.accessToken}`,
+			},
+		}
+	);
+
+	return res;
+}
+
+export { getNews, getLastReleases, deleteRelease, getReleases, getModeration };

@@ -16,6 +16,7 @@ import {
 	Icon28CubeBoxOutline,
 } from "@vkontakte/icons";
 import { deleteRelease } from "../hooks/Api";
+import { getUser } from "../hooks/Auth";
 
 export type ReleaseType = {
 	id: number;
@@ -41,6 +42,7 @@ function Release({
 	setRelease: any;
 }) {
 	const onClose = () => setPopout(null);
+	const user = getUser();
 
 	const openDeletion = () => {
 		setPopout(
@@ -98,21 +100,25 @@ function Release({
 					</ActionSheetItem>
 				)}
 
-				{release.status === "ok" && (
-					<ActionSheetItem
-						onClick={openDeletion}
-						autoclose
-						before={
-							platform === IOS ? (
-								<Icon28DeleteOutline />
-							) : (
-								<Icon28DeleteOutlineAndroid />
-							)
-						}
-						mode="destructive"
-					>
-						Удалить релиз
-					</ActionSheetItem>
+				{!user?.isSubkabinet && (
+					<>
+						{release.status === "ok" && (
+							<ActionSheetItem
+								onClick={openDeletion}
+								autoclose
+								before={
+									platform === IOS ? (
+										<Icon28DeleteOutline />
+									) : (
+										<Icon28DeleteOutlineAndroid />
+									)
+								}
+								mode="destructive"
+							>
+								Удалить релиз
+							</ActionSheetItem>
+						)}
+					</>
 				)}
 			</ActionSheet>
 		);
