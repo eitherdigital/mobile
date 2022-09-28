@@ -5,6 +5,7 @@ import {
 	CardGrid,
 	ContentCard,
 	Group,
+	PullToRefresh,
 } from "@vkontakte/vkui";
 import { getNews } from "../hooks/Api";
 import moment from "moment";
@@ -28,26 +29,39 @@ function News() {
 		};
 		getData();
 	}, []);
+	const [isRefreshing, setIsRefreshing] = React.useState<boolean>(false);
+	const onRefresh = React.useCallback(async () => {
+		setIsRefreshing(true);
+
+		try {
+			const news = await getNews();
+			setNews(news.news);
+		} finally {
+			setIsRefreshing(false);
+		}
+	}, []);
 	return (
 		<>
 			{isLoading && <ScreenSpinner state="loading" />}
 			<PanelHeader>Новости</PanelHeader>
-			<Group>
-				{news !== null && (
-					<>
-						{news.length === 0 && <NoData caption="Новостей не найдено" />}
-						<CardGrid size="l">
-							{news.map((item: any) => (
-								<ContentCard
-									header={item.title}
-									text={parse(item.body)}
-									subtitle={moment(item.created_at).format("LL")}
-								/>
-							))}
-						</CardGrid>
-					</>
-				)}
-			</Group>
+			<PullToRefresh onRefresh={onRefresh} isFetching={isRefreshing}>
+				<Group>
+					{news !== null && (
+						<>
+							{news.length === 0 && <NoData caption="Новостей не найдено" />}
+							<CardGrid size="l">
+								{news.map((item: any) => (
+									<ContentCard
+										header={item.title}
+										text={parse(item.body)}
+										subtitle={moment(item.created_at).format("LL")}
+									/>
+								))}
+							</CardGrid>
+						</>
+					)}
+				</Group>
+			</PullToRefresh>
 		</>
 	);
 }

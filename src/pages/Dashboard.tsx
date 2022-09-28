@@ -8,6 +8,7 @@ import {
 	CardGrid,
 	ContentCard,
 	Link,
+	PullToRefresh,
 } from "@vkontakte/vkui";
 import { Icon28SettingsOutline, Icon56ErrorOutline } from "@vkontakte/icons";
 import { getLastReleases, getNews } from "../hooks/Api";
@@ -42,6 +43,20 @@ function Dashboard({
 		}
 	};
 
+	const [isRefreshing, setIsRefreshing] = React.useState<boolean>(false);
+	const onRefresh = React.useCallback(async () => {
+		setIsRefreshing(true);
+
+		try {
+			const news = await getNews();
+			setNews(news.news);
+			const releases = await getLastReleases();
+			setReleases(releases.releases);
+		} finally {
+			setIsRefreshing(false);
+		}
+	}, []);
+
 	React.useEffect(() => {
 		getData();
 	}, []);
@@ -63,54 +78,56 @@ function Dashboard({
 			>
 				Главная
 			</PanelHeader>
-			<Group
-				separator={"hide"}
-				header={<Header mode="secondary">Новости</Header>}
-			>
-				{news !== null && (
-					<>
-						{(news.length === 0 && (
-							<NoData caption="Новостей не найдено" />
-						)) || (
-							<CardGrid size="l">
-								<ContentCard
-									header={news[0].title}
-									text={parse(news[0].body)}
-									subtitle={moment(news[0].created_at).format("LL")}
-								/>
-								<Link
-									style={{ marginTop: "8px" }}
-									onClick={() => setActiveStory("news")}
-								>
-									Показать все
-								</Link>
-							</CardGrid>
-						)}
-					</>
-				)}
-			</Group>
-			<Group header={<Header mode="secondary">Последние релизы</Header>}>
-				{releases !== null && (
-					<>
-						{(releases.length === 0 && (
-							<NoData caption="Релизов не найдено" />
-						)) || (
-							<>
-								{releases.map((release: ReleaseType) => (
-									<Release
-										refreshReleases={getData}
-										release={release}
-										platform={platform}
-										setPopout={setPopout}
-										setRelease={setRelease}
-										setActiveModal={setActiveModal}
+			<PullToRefresh onRefresh={onRefresh} isFetching={isRefreshing}>
+				<Group
+					separator={"hide"}
+					header={<Header mode="secondary">Новости</Header>}
+				>
+					{news !== null && (
+						<>
+							{(news.length === 0 && (
+								<NoData caption="Новостей не найдено" />
+							)) || (
+								<CardGrid size="l">
+									<ContentCard
+										header={news[0].title}
+										text={parse(news[0].body)}
+										subtitle={moment(news[0].created_at).format("LL")}
 									/>
-								))}
-							</>
-						)}
-					</>
-				)}
-			</Group>
+									<Link
+										style={{ marginTop: "8px" }}
+										onClick={() => setActiveStory("news")}
+									>
+										Показать все
+									</Link>
+								</CardGrid>
+							)}
+						</>
+					)}
+				</Group>
+				<Group header={<Header mode="secondary">Последние релизы</Header>}>
+					{releases !== null && (
+						<>
+							{(releases.length === 0 && (
+								<NoData caption="Релизов не найдено" />
+							)) || (
+								<>
+									{releases.map((release: ReleaseType) => (
+										<Release
+											refreshReleases={getData}
+											release={release}
+											platform={platform}
+											setPopout={setPopout}
+											setRelease={setRelease}
+											setActiveModal={setActiveModal}
+										/>
+									))}
+								</>
+							)}
+						</>
+					)}
+				</Group>
+			</PullToRefresh>
 		</>
 	);
 }
