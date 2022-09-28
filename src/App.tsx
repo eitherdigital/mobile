@@ -23,14 +23,16 @@ import {
 	Icon28GraphOutline,
 	Icon28DollarOutline,
 	Icon28NewsfeedLinesOutline,
+	Icon56BlockOutline,
 } from "@vkontakte/icons";
-import { getAuth, updateAuth } from "./hooks/Auth";
+import { getAuth, getUser, updateAuth } from "./hooks/Auth";
 import Login from "./pages/Login";
 import { isBrowser } from "react-device-detect";
 import News from "./pages/News";
 import Dashboard from "./pages/Dashboard";
 import Modals from "./components/Modals";
 import { ReleaseType } from "./components/Release";
+import NoData from "./components/NoData";
 
 const Authed = withAdaptivity(
 	({ viewWidth }: any) => {
@@ -44,6 +46,7 @@ const Authed = withAdaptivity(
 		const hasHeader = platform !== VKCOM;
 		const [popout, setPopout] = React.useState<any>(null);
 		const [release, setRelease] = React.useState<ReleaseType | null>(null);
+		const user = getUser();
 
 		return (
 			<SplitLayout
@@ -246,11 +249,12 @@ const Authed = withAdaptivity(
 						<View id="finance" activePanel="finance">
 							<Panel id="finance">
 								<PanelHeader>Финансы</PanelHeader>
-								<Group style={{ height: "1000px" }}>
-									<Placeholder
-										icon={<Icon28DollarOutline width={56} height={56} />}
+								{(user?.isSubkabinet && (
+									<NoData
+										caption="У вас нет прав для доступа к этому разделу"
+										icon={<Icon56BlockOutline />}
 									/>
-								</Group>
+								)) || <p>финансы</p>}
 							</Panel>
 						</View>
 						<View id="news" activePanel="news">
