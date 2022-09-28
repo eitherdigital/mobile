@@ -6,34 +6,43 @@ import {
 	Group,
 	Header,
 	CardGrid,
-	Card,
-	Text,
 	ContentCard,
 	Link,
 } from "@vkontakte/vkui";
-import { Icon28SettingsOutline, Icon28ErrorOutline } from "@vkontakte/icons";
-import { getNews } from "../hooks/Api";
+import { Icon28SettingsOutline, Icon56ErrorOutline } from "@vkontakte/icons";
+import { getLastReleases, getNews } from "../hooks/Api";
 import moment from "moment";
 import "moment/locale/ru";
 import parse from "html-react-parser";
+import NoData from "../components/NoData";
+import Release, { ReleaseType } from "../components/Release";
 
-function Dashboard({ setActiveModal, setActiveStory }: any) {
+function Dashboard({
+	setActiveModal,
+	setActiveStory,
+	platform,
+	setPopout,
+	setRelease,
+}: any) {
 	const [isLoading, setIsLoading] = React.useState<boolean>(false);
 	const [news, setNews] = React.useState<any>(null);
 	const [releases, setReleases] = React.useState<any>(null);
 
 	moment.locale("ru");
 
+	const getData = async () => {
+		setIsLoading(true);
+		try {
+			const news = await getNews();
+			setNews(news.news);
+			const releases = await getLastReleases();
+			setReleases(releases.releases);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
 	React.useEffect(() => {
-		const getData = async () => {
-			setIsLoading(true);
-			try {
-				const res = await getNews();
-				setNews(res.news);
-			} finally {
-				setIsLoading(false);
-			}
-		};
 		getData();
 	}, []);
 
@@ -54,20 +63,16 @@ function Dashboard({ setActiveModal, setActiveStory }: any) {
 			>
 				Главная
 			</PanelHeader>
-			<Group header={<Header mode="secondary">Новости</Header>}>
+			<Group
+				separator={"hide"}
+				header={<Header mode="secondary">Новости</Header>}
+			>
 				{news !== null && (
-					<CardGrid size="l">
+					<>
 						{(news.length === 0 && (
-							<Card mode="shadow" style={{ margin: "20px" }}>
-								<div className="either__noData-stack">
-									<Icon28ErrorOutline />
-									<Text className="either__noData-caption" weight="2">
-										Новостей не найдено
-									</Text>
-								</div>
-							</Card>
+							<NoData caption="Новостей не найдено" />
 						)) || (
-							<>
+							<CardGrid size="l">
 								<ContentCard
 									header={news[0].title}
 									text={parse(news[0].body)}
@@ -79,9 +84,31 @@ function Dashboard({ setActiveModal, setActiveStory }: any) {
 								>
 									Показать все
 								</Link>
+							</CardGrid>
+						)}
+					</>
+				)}
+			</Group>
+			<Group header={<Header mode="secondary">Последние релизы</Header>}>
+				{releases !== null && (
+					<>
+						{(releases.length === 0 && (
+							<NoData caption="Релизов не найдено" />
+						)) || (
+							<>
+								{releases.map((release: ReleaseType) => (
+									<Release
+										refreshReleases={getData}
+										release={release}
+										platform={platform}
+										setPopout={setPopout}
+										setRelease={setRelease}
+										setActiveModal={setActiveModal}
+									/>
+								))}
 							</>
 						)}
-					</CardGrid>
+					</>
 				)}
 			</Group>
 		</>

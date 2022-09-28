@@ -30,6 +30,7 @@ import { isBrowser } from "react-device-detect";
 import News from "./pages/News";
 import Dashboard from "./pages/Dashboard";
 import Modals from "./components/Modals";
+import { ReleaseType } from "./components/Release";
 
 const Authed = withAdaptivity(
 	({ viewWidth }: any) => {
@@ -41,17 +42,21 @@ const Authed = withAdaptivity(
 			setActiveStory(e.currentTarget.dataset.story);
 		const isDesktop = viewWidth >= ViewWidth.TABLET;
 		const hasHeader = platform !== VKCOM;
+		const [popout, setPopout] = React.useState<any>(null);
+		const [release, setRelease] = React.useState<ReleaseType | null>(null);
 
 		return (
 			<SplitLayout
 				header={hasHeader && <PanelHeader separator={false} />}
 				style={{ justifyContent: "center" }}
+				popout={popout}
 				modal={
 					<Modals
 						platform={platform}
 						onClose={() => setActiveModal(null)}
 						activeModal={activeModal}
 						isMobile={isMobile}
+						release={release}
 					/>
 				}
 			>
@@ -210,6 +215,9 @@ const Authed = withAdaptivity(
 								<Dashboard
 									setActiveModal={setActiveModal}
 									setActiveStory={setActiveStory}
+									platform={platform}
+									setRelease={setRelease}
+									setPopout={setPopout}
 								/>
 							</Panel>
 						</View>
