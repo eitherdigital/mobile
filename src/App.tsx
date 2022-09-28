@@ -34,6 +34,7 @@ import Modals from "./components/Modals";
 import { ReleaseType } from "./components/Release";
 import NoData from "./components/NoData";
 import Catalog from "./pages/Catalog";
+import Finance from "./pages/Finance";
 
 const Authed = withAdaptivity(
 	({ viewWidth }: any) => {
@@ -253,7 +254,7 @@ const Authed = withAdaptivity(
 										caption="У вас нет прав для доступа к этому разделу"
 										icon={<Icon56BlockOutline />}
 									/>
-								)) || <p>финансы</p>}
+								)) || <Finance />}
 							</Panel>
 						</View>
 						<View id="news" activePanel="news">

@@ -82,4 +82,27 @@ async function getModeration() {
 	return res;
 }
 
-export { getNews, getLastReleases, deleteRelease, getReleases, getModeration };
+async function getReports() {
+	const user = getUser();
+	if (!user) return { error: "not auth" };
+
+	const { data: res } = await axios.get(
+		`https://api.either.digital/user/get_reports`,
+		{
+			headers: {
+				authorization: `Bearer ${user.accessToken}`,
+			},
+		}
+	);
+
+	return res;
+}
+
+export {
+	getNews,
+	getLastReleases,
+	deleteRelease,
+	getReleases,
+	getModeration,
+	getReports,
+};

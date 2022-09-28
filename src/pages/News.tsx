@@ -16,13 +16,21 @@ import NoData from "../components/NoData";
 function News() {
 	moment.locale("ru");
 	const [isLoading, setIsLoading] = React.useState<boolean>(false);
+	const [error, setError] = React.useState<boolean>(false);
 	const [news, setNews] = React.useState<any>(null);
 	React.useEffect(() => {
 		const getData = async () => {
 			setIsLoading(true);
 			try {
 				const res = await getNews();
+				if (res.error) {
+					setError(true);
+					return;
+				}
 				setNews(res.news);
+				setError(false);
+			} catch {
+				setError(true);
 			} finally {
 				setIsLoading(false);
 			}
@@ -34,8 +42,15 @@ function News() {
 		setIsRefreshing(true);
 
 		try {
-			const news = await getNews();
-			setNews(news.news);
+			const res = await getNews();
+			if (res.error) {
+				setError(true);
+				return;
+			}
+			setNews(res.news);
+			setError(false);
+		} catch {
+			setError(true);
 		} finally {
 			setIsRefreshing(false);
 		}
@@ -45,22 +60,24 @@ function News() {
 			{isLoading && <ScreenSpinner state="loading" />}
 			<PanelHeader>Новости</PanelHeader>
 			<PullToRefresh onRefresh={onRefresh} isFetching={isRefreshing}>
-				<Group>
-					{news !== null && (
-						<>
-							{news.length === 0 && <NoData caption="Новостей не найдено" />}
-							<CardGrid size="l">
-								{news.map((item: any) => (
-									<ContentCard
-										header={item.title}
-										text={parse(item.body)}
-										subtitle={moment(item.created_at).format("LL")}
-									/>
-								))}
-							</CardGrid>
-						</>
-					)}
-				</Group>
+				{(!error && (
+					<Group>
+						{news !== null && (
+							<>
+								{news.length === 0 && <NoData caption="Новостей не найдено" />}
+								<CardGrid size="l">
+									{news.map((item: any) => (
+										<ContentCard
+											header={item.title}
+											text={parse(item.body)}
+											subtitle={moment(item.created_at).format("LL")}
+										/>
+									))}
+								</CardGrid>
+							</>
+						)}
+					</Group>
+				)) || <NoData caption="Произошла ошибка, попробуйте позже." />}
 			</PullToRefresh>
 		</>
 	);

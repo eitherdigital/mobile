@@ -1,0 +1,58 @@
+import React from "react";
+import { ScreenSpinner, PullToRefresh, Group, Header } from "@vkontakte/vkui";
+import { getReports } from "../hooks/Api";
+import NoData from "../components/NoData";
+import Report from "../components/Report";
+
+function Finance() {
+	const [isLoading, setIsLoading] = React.useState<boolean>(false);
+	const [error, setError] = React.useState<boolean>(false);
+	const [reports, setReports] = React.useState<any>(null);
+
+	React.useEffect(() => {
+		const getData = async () => {
+			setIsLoading(true);
+			try {
+				const reports = await getReports();
+				if (reports.error) {
+					setError(true);
+					return;
+				}
+
+				setReports(reports.financial);
+				setError(false);
+			} catch {
+				setError(true);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		getData();
+	}, []);
+
+	return (
+		<>
+			{isLoading && <ScreenSpinner state="loading" />}
+			{(!error && (
+				<>
+					{reports !== null && (
+						<>
+							{(reports.length === 0 && (
+								<NoData caption="Отчетов не найдено" />
+							)) || (
+								<Group header={<Header mode="secondary">Отчеты</Header>}>
+									{reports.map((report: any) => (
+										<Report report={report} />
+									))}
+								</Group>
+							)}
+						</>
+					)}
+				</>
+			)) || <NoData caption="Произошла ошибка, попробуйте позже." />}
+		</>
+	);
+}
+
+export default Finance;

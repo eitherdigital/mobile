@@ -10,7 +10,7 @@ import {
 	Link,
 	PullToRefresh,
 } from "@vkontakte/vkui";
-import { Icon28SettingsOutline, Icon56ErrorOutline } from "@vkontakte/icons";
+import { Icon28SettingsOutline } from "@vkontakte/icons";
 import { getLastReleases, getNews } from "../hooks/Api";
 import moment from "moment";
 import "moment/locale/ru";
@@ -26,6 +26,7 @@ function Dashboard({
 	setRelease,
 }: any) {
 	const [isLoading, setIsLoading] = React.useState<boolean>(false);
+	const [error, setError] = React.useState<boolean>(false);
 	const [news, setNews] = React.useState<any>(null);
 	const [releases, setReleases] = React.useState<any>(null);
 
@@ -35,9 +36,16 @@ function Dashboard({
 		setIsLoading(true);
 		try {
 			const news = await getNews();
+			if (news.error) {
+				setError(true);
+				return;
+			}
 			setNews(news.news);
 			const releases = await getLastReleases();
 			setReleases(releases.releases);
+			setError(false);
+		} catch {
+			setError(true);
 		} finally {
 			setIsLoading(false);
 		}
@@ -46,12 +54,18 @@ function Dashboard({
 	const [isRefreshing, setIsRefreshing] = React.useState<boolean>(false);
 	const onRefresh = React.useCallback(async () => {
 		setIsRefreshing(true);
-
 		try {
 			const news = await getNews();
+			if (news.error) {
+				setError(true);
+				return;
+			}
 			setNews(news.news);
 			const releases = await getLastReleases();
 			setReleases(releases.releases);
+			setError(false);
+		} catch {
+			setError(true);
 		} finally {
 			setIsRefreshing(false);
 		}
@@ -79,54 +93,58 @@ function Dashboard({
 				Главная
 			</PanelHeader>
 			<PullToRefresh onRefresh={onRefresh} isFetching={isRefreshing}>
-				<Group
-					separator={"hide"}
-					header={<Header mode="secondary">Новости</Header>}
-				>
-					{news !== null && (
-						<>
-							{(news.length === 0 && (
-								<NoData caption="Новостей не найдено" />
-							)) || (
-								<CardGrid size="l">
-									<ContentCard
-										header={news[0].title}
-										text={parse(news[0].body)}
-										subtitle={moment(news[0].created_at).format("LL")}
-									/>
-									<Link
-										style={{ marginTop: "8px" }}
-										onClick={() => setActiveStory("news")}
-									>
-										Показать все
-									</Link>
-								</CardGrid>
-							)}
-						</>
-					)}
-				</Group>
-				<Group header={<Header mode="secondary">Последние релизы</Header>}>
-					{releases !== null && (
-						<>
-							{(releases.length === 0 && (
-								<NoData caption="Релизов не найдено" />
-							)) || (
+				{(!error && (
+					<>
+						<Group
+							separator={"hide"}
+							header={<Header mode="secondary">Новости</Header>}
+						>
+							{news !== null && (
 								<>
-									{releases.map((release: ReleaseType) => (
-										<Release
-											refreshReleases={getData}
-											release={release}
-											platform={platform}
-											setPopout={setPopout}
-											setRelease={setRelease}
-											setActiveModal={setActiveModal}
-										/>
-									))}
+									{(news.length === 0 && (
+										<NoData caption="Новостей не найдено" />
+									)) || (
+										<CardGrid size="l">
+											<ContentCard
+												header={news[0].title}
+												text={parse(news[0].body)}
+												subtitle={moment(news[0].created_at).format("LL")}
+											/>
+											<Link
+												style={{ marginTop: "8px" }}
+												onClick={() => setActiveStory("news")}
+											>
+												Показать все
+											</Link>
+										</CardGrid>
+									)}
 								</>
 							)}
-						</>
-					)}
-				</Group>
+						</Group>
+						<Group header={<Header mode="secondary">Последние релизы</Header>}>
+							{releases !== null && (
+								<>
+									{(releases.length === 0 && (
+										<NoData caption="Релизов не найдено" />
+									)) || (
+										<>
+											{releases.map((release: ReleaseType) => (
+												<Release
+													refreshReleases={getData}
+													release={release}
+													platform={platform}
+													setPopout={setPopout}
+													setRelease={setRelease}
+													setActiveModal={setActiveModal}
+												/>
+											))}
+										</>
+									)}
+								</>
+							)}
+						</Group>
+					</>
+				)) || <NoData caption="Произошла ошибка, попробуйте позже." />}
 			</PullToRefresh>
 		</>
 	);

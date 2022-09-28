@@ -15,6 +15,7 @@ function Catalog({ setActiveModal, platform, setPopout, setRelease }: any) {
 	const [selected, setSelected] =
 		React.useState<"catalog" | "moderation">("catalog");
 	const [isLoading, setIsLoading] = React.useState<boolean>(false);
+	const [error, setError] = React.useState<boolean>(false);
 	const [releases, setReleases] = React.useState<any>(null);
 	const [moderation, setModeration] = React.useState<any>(null);
 
@@ -22,9 +23,16 @@ function Catalog({ setActiveModal, platform, setPopout, setRelease }: any) {
 		setIsLoading(true);
 		try {
 			const releases = await getReleases();
+			if (releases.error) {
+				setError(true);
+				return;
+			}
 			setReleases(releases.releases);
 			const moderation = await getModeration();
 			setModeration(moderation.releases);
+			setError(false);
+		} catch {
+			setError(true);
 		} finally {
 			setIsLoading(false);
 		}
@@ -40,9 +48,16 @@ function Catalog({ setActiveModal, platform, setPopout, setRelease }: any) {
 
 		try {
 			const releases = await getReleases();
+			if (releases.error) {
+				setError(true);
+				return;
+			}
 			setReleases(releases.releases);
 			const moderation = await getModeration();
 			setModeration(moderation.releases);
+			setError(false);
+		} catch {
+			setError(true);
 		} finally {
 			setIsRefreshing(false);
 		}
@@ -72,53 +87,57 @@ function Catalog({ setActiveModal, platform, setPopout, setRelease }: any) {
 				</TabsItem>
 			</Tabs>
 			<PullToRefresh isFetching={isRefreshing} onRefresh={onRefresh}>
-				{(selected === "catalog" && (
-					<Group>
-						{releases !== null && (
-							<>
-								{(releases.length === 0 && (
-									<NoData caption="Релизов не найдено" />
-								)) || (
+				{(!error && (
+					<>
+						{(selected === "catalog" && (
+							<Group>
+								{releases !== null && (
 									<>
-										{releases.map((release: ReleaseType) => (
-											<Release
-												refreshReleases={getData}
-												release={release}
-												platform={platform}
-												setPopout={setPopout}
-												setRelease={setRelease}
-												setActiveModal={setActiveModal}
-											/>
-										))}
+										{(releases.length === 0 && (
+											<NoData caption="Релизов не найдено" />
+										)) || (
+											<>
+												{releases.map((release: ReleaseType) => (
+													<Release
+														refreshReleases={getData}
+														release={release}
+														platform={platform}
+														setPopout={setPopout}
+														setRelease={setRelease}
+														setActiveModal={setActiveModal}
+													/>
+												))}
+											</>
+										)}
 									</>
 								)}
-							</>
-						)}
-					</Group>
-				)) || (
-					<Group>
-						{moderation !== null && (
-							<>
-								{(moderation.length === 0 && (
-									<NoData caption="Релизов не найдено" />
-								)) || (
+							</Group>
+						)) || (
+							<Group>
+								{moderation !== null && (
 									<>
-										{moderation.map((release: ReleaseType) => (
-											<Release
-												refreshReleases={getData}
-												release={release}
-												platform={platform}
-												setPopout={setPopout}
-												setRelease={setRelease}
-												setActiveModal={setActiveModal}
-											/>
-										))}
+										{(moderation.length === 0 && (
+											<NoData caption="Релизов не найдено" />
+										)) || (
+											<>
+												{moderation.map((release: ReleaseType) => (
+													<Release
+														refreshReleases={getData}
+														release={release}
+														platform={platform}
+														setPopout={setPopout}
+														setRelease={setRelease}
+														setActiveModal={setActiveModal}
+													/>
+												))}
+											</>
+										)}
 									</>
 								)}
-							</>
+							</Group>
 						)}
-					</Group>
-				)}
+					</>
+				)) || <NoData caption="Произошла ошибка, попробуйте позже." />}
 			</PullToRefresh>
 		</>
 	);
