@@ -6,6 +6,7 @@ import Report from "../components/Report";
 
 function Finance() {
 	const [isLoading, setIsLoading] = React.useState<boolean>(false);
+	const [isRefreshing, setIsRefreshing] = React.useState<boolean>(false);
 	const [error, setError] = React.useState<boolean>(false);
 	const [reports, setReports] = React.useState<any>(null);
 
@@ -31,8 +32,26 @@ function Finance() {
 		getData();
 	}, []);
 
+	const onRefresh = React.useCallback(async () => {
+		setIsRefreshing(true);
+		try {
+			const reports = await getReports();
+			if (reports.error) {
+				setError(true);
+				return;
+			}
+
+			setReports(reports.financial);
+			setError(false);
+		} catch {
+			setError(true);
+		} finally {
+			setIsRefreshing(false);
+		}
+	}, []);
+
 	return (
-		<>
+		<PullToRefresh onRefresh={onRefresh} isFetching={isRefreshing}>
 			{isLoading && <ScreenSpinner state="loading" />}
 			{(!error && (
 				<>
@@ -51,7 +70,7 @@ function Finance() {
 					)}
 				</>
 			)) || <NoData caption="Произошла ошибка, попробуйте позже." />}
-		</>
+		</PullToRefresh>
 	);
 }
 

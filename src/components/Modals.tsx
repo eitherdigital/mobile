@@ -27,7 +27,7 @@ import {
 	Icon28CopyOutline,
 	Icon28DoneOutline,
 } from "@vkontakte/icons";
-import { getUser } from "../hooks/Auth";
+import { getUser, logout } from "../hooks/Auth";
 import { Icon28ChevronRightOutline } from "@vkontakte/icons";
 import NoData from "./NoData";
 
@@ -92,6 +92,15 @@ function Modals({ activeModal, onClose, platform, isMobile, release }: any) {
 							Switch
 						</SimpleCell>
 					</AdaptivityProvider>
+					<SimpleCell
+						onClick={() => {
+							logout();
+							window.location.href = "/";
+						}}
+						style={{ color: "var(--destructive)" }}
+					>
+						Выйти из аккаунта
+					</SimpleCell>
 				</Group>
 			</ModalPage>
 		);
