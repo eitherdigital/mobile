@@ -22,7 +22,7 @@ async function getLastReleases() {
 	if (!user) return { error: "not auth" };
 
 	const { data: res } = await axios.get(
-		`https://api.either.digital/admin/get_releases?type=ok&limit=5`,
+		`https://api.either.digital/user/get_releases?type=ok&limit=5`,
 		{
 			headers: {
 				authorization: `Bearer ${user.accessToken}`,
