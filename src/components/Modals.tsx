@@ -24,6 +24,8 @@ import {
 	Icon24Dismiss,
 	Icon28SwitchOutline,
 	Icon28Profile,
+	Icon28CopyOutline,
+	Icon28DoneOutline,
 } from "@vkontakte/icons";
 import { getUser } from "../hooks/Auth";
 import { Icon28ChevronRightOutline } from "@vkontakte/icons";
@@ -94,6 +96,9 @@ function Modals({ activeModal, onClose, platform, isMobile, release }: any) {
 			</ModalPage>
 		);
 	};
+
+	const [copied, setCopied] = React.useState<boolean>(false);
+
 	const releaseInfo = () => (
 		<ModalPage
 			id={"release_info"}
@@ -147,7 +152,29 @@ function Modals({ activeModal, onClose, platform, isMobile, release }: any) {
 				<SimpleCell>
 					<InfoRow header="Тип релиза">{release?.type}</InfoRow>
 				</SimpleCell>
-				<SimpleCell>
+				<SimpleCell
+					onClick={
+						release?.upc
+							? () => {
+									if (copied) return;
+									navigator.clipboard.writeText(release.upc);
+									setCopied(true);
+									setTimeout(() => {
+										setCopied(false);
+									}, 2000);
+							  }
+							: undefined
+					}
+					after={
+						release?.upc ? (
+							copied ? (
+								<Icon28DoneOutline />
+							) : (
+								<Icon28CopyOutline />
+							)
+						) : undefined
+					}
+				>
 					<InfoRow header="UPC">{release?.upc || "Н/А"}</InfoRow>
 				</SimpleCell>
 				<SimpleCell>
