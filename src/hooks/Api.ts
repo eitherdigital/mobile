@@ -55,7 +55,7 @@ async function getReleases() {
 	if (!user) return { error: "not auth" };
 
 	const { data: res } = await axios.get(
-		`https://api.either.digital/user/get_releases?type=ok`,
+		`https://api.either.digital/admin/get_releases?type=ok`,
 		{
 			headers: {
 				authorization: `Bearer ${user.accessToken}`,
@@ -98,6 +98,66 @@ async function getReports() {
 	return res;
 }
 
+async function getStreams(id?: string) {
+	const user = getUser();
+	if (!user) return { error: "not auth" };
+
+	const { data: res } = await axios.get(
+		id
+			? `https://api.either.digital/admin/get_release_analytics?id=${id}`
+			: `https://api.either.digital/admin/get_all_streams`,
+		{
+			headers: {
+				authorization: `Bearer ${user.accessToken}`,
+			},
+		}
+	);
+
+	return id
+		? {
+				error: res.error,
+				all_streams: res.analytics[0].all_streams,
+				pay_streams: res.analytics[0].pay_streams,
+		  }
+		: res;
+}
+
+async function getDateStreams(id?: string) {
+	const user = getUser();
+	if (!user) return { error: "not auth" };
+
+	const { data: res } = await axios.get(
+		id
+			? `https://api.either.digital/admin/get_release_date_streams?id=${id}`
+			: `https://api.either.digital/admin/get_date_streams`,
+		{
+			headers: {
+				authorization: `Bearer ${user.accessToken}`,
+			},
+		}
+	);
+
+	return res;
+}
+
+async function getTopReleases(id?: string) {
+	const user = getUser();
+	if (!user) return { error: "not auth" };
+
+	const { data: res } = await axios.get(
+		id
+			? `https://api.either.digital/admin/get_release_analytics?id=${id}`
+			: `https://api.either.digital/admin/get_analytics`,
+		{
+			headers: {
+				authorization: `Bearer ${user.accessToken}`,
+			},
+		}
+	);
+
+	return res;
+}
+
 export {
 	getNews,
 	getLastReleases,
@@ -105,4 +165,7 @@ export {
 	getReleases,
 	getModeration,
 	getReports,
+	getStreams,
+	getDateStreams,
+	getTopReleases,
 };

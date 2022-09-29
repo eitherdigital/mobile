@@ -35,6 +35,7 @@ import { ReleaseType } from "./components/Release";
 import NoData from "./components/NoData";
 import Catalog from "./pages/Catalog";
 import Finance from "./pages/Finance";
+import Analytics from "./pages/Analytics";
 
 const Authed = withAdaptivity(
 	({ viewWidth }: any) => {
@@ -238,12 +239,7 @@ const Authed = withAdaptivity(
 						</View>
 						<View id="analytics" activePanel="analytics">
 							<Panel id="analytics">
-								<PanelHeader>Аналитика</PanelHeader>
-								<Group style={{ height: "1000px" }}>
-									<Placeholder
-										icon={<Icon28GraphOutline width={56} height={56} />}
-									/>
-								</Group>
+								<Analytics />
 							</Panel>
 						</View>
 						<View id="finance" activePanel="finance">
