@@ -116,8 +116,8 @@ async function getStreams(id?: string) {
 	return id
 		? {
 				error: res.error,
-				all_streams: res.analytics[0].all_streams,
-				pay_streams: res.analytics[0].pay_streams,
+				all_streams: res.analytics[0]?.all_streams || 0,
+				pay_streams: res.analytics[0]?.pay_streams || 0,
 		  }
 		: res;
 }

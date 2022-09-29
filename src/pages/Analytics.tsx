@@ -16,9 +16,41 @@ import {
 	SimpleCell,
 	Counter,
 } from "@vkontakte/vkui";
-import ReactApexChart from "react-apexcharts";
+import {
+	Chart as ChartJS,
+	CategoryScale,
+	LinearScale,
+	PointElement,
+	LineElement,
+	Title,
+	Tooltip,
+	Legend,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
 
 function Analytics() {
+	ChartJS.register(
+		CategoryScale,
+		LinearScale,
+		PointElement,
+		LineElement,
+		Title,
+		Tooltip,
+		Legend
+	);
+	const options = {
+		responsive: true,
+		plugins: {
+			legend: {
+				position: "bottom" as const,
+				display: false,
+			},
+			title: {
+				display: false,
+				text: "Analytics",
+			},
+		},
+	};
 	const [isLoading, setIsLoading] = React.useState<boolean>(false);
 	const [isRefreshing, setIsRefreshing] = React.useState<boolean>(false);
 	const [error, setError] = React.useState<boolean>(false);
@@ -77,7 +109,7 @@ function Analytics() {
 				let lastDate: any = null;
 				let streamsPayLast: any = 0;
 				let streamsAllLast: any = 0;
-				if (dateStreams.length !== 0) {
+				if (dateStreams.streams.length !== 0) {
 					lastDate = dateStreams.streams[0].date;
 				}
 				for (const stream of dateStreams.streams) {
@@ -91,45 +123,26 @@ function Analytics() {
 						streamsPayLast = 0;
 						streamsAllLast = 0;
 						lastDate = stream.date;
+						streamsPayLast = streamsPayLast + stream.pay_streams;
+						streamsAllLast = streamsAllLast + stream.all_streams;
 					}
 				}
 				setDateStreams({
-					series: [
+					labels: dates,
+					datasets: [
 						{
-							name: "Все прослушивания",
+							label: "Все прослушивания",
 							data: alls,
+							borderColor: "rgb(255, 99, 132)",
+							backgroundColor: "rgba(255, 99, 132, 0.5)",
 						},
 						{
-							name: "Платные прослушивания",
+							label: "Платные прослушивания",
 							data: pays,
+							borderColor: "rgb(53, 162, 235)",
+							backgroundColor: "rgba(53, 162, 235, 0.5)",
 						},
 					],
-					options: {
-						chart: {
-							height: 350,
-							type: "line",
-							zoom: {
-								enabled: false,
-							},
-							toolbar: false,
-						},
-						dataLabels: {
-							enabled: false,
-						},
-						stroke: {
-							curve: "straight",
-						},
-
-						grid: {
-							row: {
-								colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
-								opacity: 0.5,
-							},
-						},
-						xaxis: {
-							categories: dates,
-						},
-					},
 				});
 
 				const top = await getTopReleases(
@@ -143,6 +156,7 @@ function Analytics() {
 
 				setError(false);
 			} catch (e) {
+				console.log(e);
 				setError(true);
 			} finally {
 				setIsLoading(false);
@@ -182,14 +196,7 @@ function Analytics() {
 							>
 								Платные прослушивания
 							</SimpleCell>
-							{dateStreams && (
-								<ReactApexChart
-									options={dateStreams.options}
-									series={dateStreams.series}
-									type="line"
-									height={350}
-								/>
-							)}
+							{dateStreams && <Line options={options} data={dateStreams} />}
 						</Group>
 					)}
 				</>
