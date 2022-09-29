@@ -7,10 +7,9 @@ function getTheme() {
 		theme = "dark";
 	}
 
-	const headers = new Headers();
-
-	if (headers.get("app-theme")) {
-		theme = headers.get("app-theme") as "dark" | "light";
+	const appTheme = window.localStorage.getItem("app-theme");
+	if (appTheme === "light" || appTheme === "dark") {
+		theme = appTheme;
 	}
 
 	return theme;
