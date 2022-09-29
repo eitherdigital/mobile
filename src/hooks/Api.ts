@@ -55,7 +55,7 @@ async function getReleases() {
 	if (!user) return { error: "not auth" };
 
 	const { data: res } = await axios.get(
-		`https://api.either.digital/admin/get_releases?type=ok`,
+		`https://api.either.digital/user/get_releases?type=ok`,
 		{
 			headers: {
 				authorization: `Bearer ${user.accessToken}`,
@@ -104,8 +104,8 @@ async function getStreams(id?: string) {
 
 	const { data: res } = await axios.get(
 		id
-			? `https://api.either.digital/admin/get_release_analytics?id=${id}`
-			: `https://api.either.digital/admin/get_all_streams`,
+			? `https://api.either.digital/user/get_release_analytics?id=${id}`
+			: `https://api.either.digital/user/get_all_streams`,
 		{
 			headers: {
 				authorization: `Bearer ${user.accessToken}`,
@@ -128,8 +128,8 @@ async function getDateStreams(id?: string) {
 
 	const { data: res } = await axios.get(
 		id
-			? `https://api.either.digital/admin/get_release_date_streams?id=${id}`
-			: `https://api.either.digital/admin/get_date_streams`,
+			? `https://api.either.digital/user/get_release_date_streams?id=${id}`
+			: `https://api.either.digital/user/get_date_streams`,
 		{
 			headers: {
 				authorization: `Bearer ${user.accessToken}`,
@@ -146,8 +146,8 @@ async function getTopReleases(id?: string) {
 
 	const { data: res } = await axios.get(
 		id
-			? `https://api.either.digital/admin/get_release_analytics?id=${id}`
-			: `https://api.either.digital/admin/get_analytics`,
+			? `https://api.either.digital/user/get_release_analytics?id=${id}`
+			: `https://api.either.digital/user/get_analytics`,
 		{
 			headers: {
 				authorization: `Bearer ${user.accessToken}`,

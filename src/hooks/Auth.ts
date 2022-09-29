@@ -1,6 +1,7 @@
 import axios from "axios";
 
 interface UserData {
+	id: number;
 	accessToken: string;
 	email: string;
 	isLabel: number;
@@ -15,6 +16,7 @@ function setAuth(user: UserData) {
 	Store.setItem(
 		"auth-data",
 		JSON.stringify({
+			id: user.id,
 			accessToken: user.accessToken,
 			email: user.email,
 			isLabel: user.isLabel,
@@ -93,6 +95,7 @@ async function login(email: string, password: string) {
 		if (user.error !== false) return { error: `${user.error}` };
 
 		let userData: UserData = {
+			id: user.user.id,
 			accessToken: res.token,
 			name: user.user.name,
 			email: user.user.email,
@@ -132,6 +135,7 @@ async function updateAuth() {
 		}
 
 		let userData: UserData = {
+			id: res.user.id,
 			accessToken: user.accessToken,
 			name: res.user.name,
 			email: res.user.email,

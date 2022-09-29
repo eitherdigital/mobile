@@ -19,6 +19,8 @@ import {
 	InfoRow,
 	Textarea,
 	FormItem,
+	InitialsAvatar,
+	calcInitialsAvatarColor,
 } from "@vkontakte/vkui";
 import {
 	Icon24Dismiss,
@@ -34,6 +36,12 @@ import NoData from "./NoData";
 function Modals({ activeModal, onClose, platform, isMobile, release }: any) {
 	const Settings = () => {
 		const user = getUser();
+		const getInitials = (name: string) => {
+			const [firstName, lastName] = name.split(" ");
+			return firstName && lastName
+				? `${firstName.charAt(0)}${lastName.charAt(0)}`
+				: firstName.charAt(0);
+		};
 		return (
 			<ModalPage
 				id={"settings"}
@@ -68,9 +76,12 @@ function Modals({ activeModal, onClose, platform, isMobile, release }: any) {
 						padding: 32,
 					}}
 				>
-					<Avatar size={96}>
-						<Icon28Profile width={96} height={96} />
-					</Avatar>
+					<InitialsAvatar
+						gradientColor={calcInitialsAvatarColor(user?.id ? user.id : 1)}
+						size={96}
+					>
+						{getInitials(user?.name ? user.name : "Загрузка")}
+					</InitialsAvatar>
 					<Title
 						style={{ marginBottom: 8, marginTop: 20 }}
 						level="2"
