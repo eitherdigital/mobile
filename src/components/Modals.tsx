@@ -21,27 +21,37 @@ import {
 	FormItem,
 	InitialsAvatar,
 	calcInitialsAvatarColor,
+	PanelHeaderBack,
 } from "@vkontakte/vkui";
 import {
 	Icon24Dismiss,
 	Icon28SwitchOutline,
-	Icon28Profile,
 	Icon28CopyOutline,
 	Icon28DoneOutline,
+	Icon28UserAddOutline,
 } from "@vkontakte/icons";
 import { getUser, logout } from "../hooks/Auth";
 import { Icon28ChevronRightOutline } from "@vkontakte/icons";
 import NoData from "./NoData";
+import { getSubaccounts } from "../hooks/Api";
 
-function Modals({ activeModal, onClose, platform, isMobile, release }: any) {
+function Modals({
+	activeModal,
+	onClose,
+	platform,
+	isMobile,
+	release,
+	setActiveModal,
+}: any) {
+	const getInitials = (name: string) => {
+		const [firstName, lastName] = name.split(" ");
+		return firstName && lastName
+			? `${firstName.charAt(0)}${lastName.charAt(0)}`
+			: firstName.charAt(0);
+	};
 	const Settings = () => {
 		const user = getUser();
-		const getInitials = (name: string) => {
-			const [firstName, lastName] = name.split(" ");
-			return firstName && lastName
-				? `${firstName.charAt(0)}${lastName.charAt(0)}`
-				: firstName.charAt(0);
-		};
+
 		return (
 			<ModalPage
 				id={"settings"}
@@ -103,6 +113,17 @@ function Modals({ activeModal, onClose, platform, isMobile, release }: any) {
 							Switch
 						</SimpleCell>
 					</AdaptivityProvider>
+					{!user?.isSubkabinet && (
+						<SimpleCell
+							expandable
+							onClick={() => {
+								setActiveModal("subaccounts");
+							}}
+							before={<Icon28UserAddOutline />}
+						>
+							Субкабинеты
+						</SimpleCell>
+					)}
 					<SimpleCell
 						onClick={() => {
 							logout();
@@ -118,6 +139,65 @@ function Modals({ activeModal, onClose, platform, isMobile, release }: any) {
 	};
 
 	const [copied, setCopied] = React.useState<boolean>(false);
+	const user = getUser();
+	const [subaccounts, setSubaccounts] = React.useState<any>(null);
+	const getSubaccountsAPI = async () => {
+		const res = await getSubaccounts();
+		setSubaccounts(res.users);
+	};
+	React.useEffect(() => {
+		if (!user?.isSubkabinet) {
+			getSubaccountsAPI();
+		}
+		// eslint-disable-next-line
+	}, []);
+
+	const subAccounts = () => {
+		return (
+			<ModalPage
+				id={"subaccounts"}
+				onClose={() => {
+					setActiveModal("settings");
+				}}
+				header={
+					<ModalPageHeader
+						before={
+							<PanelHeaderBack
+								label="Назад"
+								onClick={() => {
+									setActiveModal("settings");
+								}}
+							/>
+						}
+					>
+						Субкабинеты
+					</ModalPageHeader>
+				}
+				settlingHeight={100}
+			>
+				{subaccounts !== null && (
+					<Group>
+						{subaccounts.map((sub: any) => (
+							<SimpleCell
+								before={
+									<InitialsAvatar
+										gradientColor={calcInitialsAvatarColor(sub.id)}
+										size={48}
+									>
+										{getInitials(sub.name)}
+									</InitialsAvatar>
+								}
+								expandable
+								subtitle={sub.email}
+							>
+								{sub.name}
+							</SimpleCell>
+						))}
+					</Group>
+				)}
+			</ModalPage>
+		);
+	};
 
 	const releaseInfo = () => (
 		<ModalPage
@@ -353,6 +433,7 @@ function Modals({ activeModal, onClose, platform, isMobile, release }: any) {
 			{Settings()}
 			{releaseInfo()}
 			{releasePlatforms()}
+			{subAccounts()}
 		</ModalRoot>
 	);
 }

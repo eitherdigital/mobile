@@ -14,7 +14,6 @@ import {
 	Tabbar,
 	TabbarItem,
 	View,
-	Placeholder,
 	ScreenSpinner,
 } from "@vkontakte/vkui";
 import {
@@ -63,6 +62,7 @@ const Authed = withAdaptivity(
 						activeModal={activeModal}
 						isMobile={isMobile}
 						release={release}
+						setActiveModal={setActiveModal}
 					/>
 				}
 			>

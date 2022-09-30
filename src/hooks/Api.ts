@@ -158,6 +158,23 @@ async function getTopReleases(id?: string) {
 	return res;
 }
 
+async function getSubaccounts() {
+	const user = getUser();
+	if (!user) return { error: "not auth" };
+	if (user.isSubkabinet) return { error: 403 };
+
+	const { data: res } = await axios.get(
+		"https://api.either.digital/user/get_users",
+		{
+			headers: {
+				authorization: `Bearer ${user.accessToken}`,
+			},
+		}
+	);
+
+	return res;
+}
+
 export {
 	getNews,
 	getLastReleases,
@@ -168,4 +185,5 @@ export {
 	getStreams,
 	getDateStreams,
 	getTopReleases,
+	getSubaccounts,
 };
