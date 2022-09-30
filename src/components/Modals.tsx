@@ -22,6 +22,7 @@ import {
 	InitialsAvatar,
 	calcInitialsAvatarColor,
 	PanelHeaderBack,
+	Alert,
 } from "@vkontakte/vkui";
 import {
 	Icon24Dismiss,
@@ -33,7 +34,7 @@ import {
 import { getUser, logout } from "../hooks/Auth";
 import { Icon28ChevronRightOutline } from "@vkontakte/icons";
 import NoData from "./NoData";
-import { getSubaccounts } from "../hooks/Api";
+import { getSubaccounts, deleteSubaccount } from "../hooks/Api";
 
 function Modals({
 	activeModal,
@@ -42,6 +43,7 @@ function Modals({
 	isMobile,
 	release,
 	setActiveModal,
+	setPopout,
 }: any) {
 	const getInitials = (name: string) => {
 		const [firstName, lastName] = name.split(" ");
@@ -141,6 +143,7 @@ function Modals({
 	const [copied, setCopied] = React.useState<boolean>(false);
 	const user = getUser();
 	const [subaccounts, setSubaccounts] = React.useState<any>(null);
+	const [subaccount, setSubaccount] = React.useState<any>(null);
 	const getSubaccountsAPI = async () => {
 		const res = await getSubaccounts();
 		setSubaccounts(res.users);
@@ -187,6 +190,10 @@ function Modals({
 										{getInitials(sub.name)}
 									</InitialsAvatar>
 								}
+								onClick={() => {
+									setSubaccount(sub);
+									setActiveModal("subaccount");
+								}}
 								expandable
 								subtitle={sub.email}
 							>
@@ -195,6 +202,102 @@ function Modals({
 						))}
 					</Group>
 				)}
+			</ModalPage>
+		);
+	};
+
+	const subAccount = () => {
+		return (
+			<ModalPage
+				id={"subaccount"}
+				onClose={() => {
+					setActiveModal("subaccounts");
+				}}
+				header={
+					<ModalPageHeader
+						before={
+							<PanelHeaderBack
+								label="Назад"
+								onClick={() => {
+									setActiveModal("subaccounts");
+								}}
+							/>
+						}
+					>
+						{subaccount?.name}
+					</ModalPageHeader>
+				}
+				settlingHeight={100}
+			>
+				<Gradient
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "center",
+						justifyContent: "center",
+						textAlign: "center",
+						padding: 32,
+					}}
+				>
+					<InitialsAvatar
+						gradientColor={calcInitialsAvatarColor(
+							subaccount?.id ? subaccount.id : 1
+						)}
+						size={96}
+					>
+						{getInitials(subaccount?.name ? subaccount.name : "Загрузка")}
+					</InitialsAvatar>
+					<Title
+						style={{ marginBottom: 8, marginTop: 20 }}
+						level="2"
+						weight="2"
+					>
+						{subaccount?.name}
+					</Title>
+				</Gradient>
+				<Separator />
+				<Group header={<Header mode="secondary">Информация</Header>}>
+					<SimpleCell>
+						<InfoRow header="Логин">{subaccount?.username}</InfoRow>
+					</SimpleCell>
+					<SimpleCell>
+						<InfoRow header="Email">{subaccount?.email}</InfoRow>
+					</SimpleCell>
+					<SimpleCell
+						onClick={() => {
+							setPopout(
+								<Alert
+									actions={[
+										{
+											title: "Отмена",
+											autoclose: true,
+											mode: "cancel",
+										},
+										{
+											title: "Удалить",
+											autoclose: true,
+											mode: "destructive",
+											action: async () => {
+												await deleteSubaccount(subaccount.id);
+												await getSubaccountsAPI();
+												setActiveModal("subaccounts");
+											},
+										},
+									]}
+									actionsLayout="horizontal"
+									onClose={() => {
+										setPopout(null);
+									}}
+									header="Удаление аккаунта"
+									text="Вы уверены, что хотите удалить этот аккаунт?"
+								/>
+							);
+						}}
+						style={{ color: "var(--destructive)" }}
+					>
+						Удалить аккаунт
+					</SimpleCell>
+				</Group>
 			</ModalPage>
 		);
 	};
@@ -434,6 +537,7 @@ function Modals({
 			{releaseInfo()}
 			{releasePlatforms()}
 			{subAccounts()}
+			{subAccount()}
 		</ModalRoot>
 	);
 }

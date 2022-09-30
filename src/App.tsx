@@ -63,6 +63,7 @@ const Authed = withAdaptivity(
 						isMobile={isMobile}
 						release={release}
 						setActiveModal={setActiveModal}
+						setPopout={setPopout}
 					/>
 				}
 			>
