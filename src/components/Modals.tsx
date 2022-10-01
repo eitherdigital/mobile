@@ -23,6 +23,11 @@ import {
 	calcInitialsAvatarColor,
 	PanelHeaderBack,
 	Alert,
+	Input,
+	FormLayout,
+	Button,
+	CellButton,
+	Placeholder,
 } from "@vkontakte/vkui";
 import {
 	Icon24Dismiss,
@@ -30,11 +35,16 @@ import {
 	Icon28CopyOutline,
 	Icon28DoneOutline,
 	Icon28UserAddOutline,
+	Icon56CheckCircleOutline,
 } from "@vkontakte/icons";
 import { getUser, logout } from "../hooks/Auth";
 import { Icon28ChevronRightOutline } from "@vkontakte/icons";
 import NoData from "./NoData";
-import { getSubaccounts, deleteSubaccount } from "../hooks/Api";
+import {
+	getSubaccounts,
+	deleteSubaccount,
+	createSubaccount as createSubaccountAPI,
+} from "../hooks/Api";
 
 function Modals({
 	activeModal,
@@ -126,15 +136,15 @@ function Modals({
 							Субкабинеты
 						</SimpleCell>
 					)}
-					<SimpleCell
+					<CellButton
 						onClick={() => {
 							logout();
 							window.location.href = "/";
 						}}
-						style={{ color: "var(--destructive)" }}
+						mode="danger"
 					>
 						Выйти из аккаунта
-					</SimpleCell>
+					</CellButton>
 				</Group>
 			</ModalPage>
 		);
@@ -154,6 +164,230 @@ function Modals({
 		}
 		// eslint-disable-next-line
 	}, []);
+	const [name, setName] = React.useState<string>("");
+	const [email, setEmail] = React.useState<string>("");
+	const [login, setLogin] = React.useState<string>("");
+	const [copyrights, setCopyrights] = React.useState<string>("");
+	const [isLoading, setIsLoading] = React.useState<boolean>(false);
+	const [success, setSuccess] = React.useState<boolean>(false);
+	type ErrorType = {
+		name: string | null;
+		value: string | null;
+	};
+	const [error, setError] = React.useState<ErrorType>({
+		name: null,
+		value: null,
+	});
+	const createSubaccount = () => {
+		const onChange = (
+			name: "name" | "email" | "login" | "copyrights",
+			value: string
+		) => {
+			switch (name) {
+				case "name":
+					setName(value);
+					break;
+				case "email":
+					setEmail(value);
+					break;
+				case "login":
+					setLogin(value);
+					break;
+				case "copyrights":
+					setCopyrights(value);
+					break;
+			}
+		};
+
+		const onSubmit = async () => {
+			setIsLoading(true);
+			try {
+				if (name.trim() === "") {
+					setError({ name: "name", value: "Это поле обязательное" });
+					return;
+				}
+				if (email.trim() === "") {
+					setError({ name: "email", value: "Это поле обязательное" });
+					return;
+				}
+				if (login.trim() === "") {
+					setError({ name: "login", value: "Это поле обязательное" });
+					return;
+				}
+				if (copyrights.trim() === "") {
+					setError({ name: "copyrights", value: "Это поле обязательное" });
+					return;
+				}
+				const res = await createSubaccountAPI(name, login, email, copyrights);
+				if (res.error === "Пользователь уже существует.") {
+					setError({ name: "login", value: res.error });
+					return;
+				}
+				getSubaccountsAPI();
+				setSuccess(true);
+
+				setName("");
+				setLogin("");
+				setCopyrights("");
+				setError({ name: null, value: null });
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		return (
+			<ModalPage
+				id={"createSubaccount"}
+				onClose={() => {
+					setActiveModal("subaccounts");
+					setIsLoading(false);
+					setName("");
+					setEmail("");
+					setLogin("");
+					setCopyrights("");
+					setError({ name: null, value: null });
+					setTimeout(() => {
+						setSuccess(false);
+					}, 1000);
+				}}
+				header={
+					<ModalPageHeader
+						before={
+							<PanelHeaderBack
+								label="Назад"
+								onClick={() => {
+									setActiveModal("subaccounts");
+									setIsLoading(false);
+									setName("");
+									setEmail("");
+									setLogin("");
+									setCopyrights("");
+									setError({ name: null, value: null });
+									setTimeout(() => {
+										setSuccess(false);
+									}, 1000);
+								}}
+							/>
+						}
+					>
+						Создать пользователя
+					</ModalPageHeader>
+				}
+				settlingHeight={100}
+			>
+				{(!success && (
+					<>
+						<Group
+							header={<Header mode="secondary">Сведения о пользователе</Header>}
+						>
+							<FormLayout>
+								<FormItem
+									top="Имя"
+									status={error.name === "name" ? "error" : "default"}
+									bottom={error.name === "name" ? error.value : undefined}
+								>
+									<Input
+										disabled={isLoading}
+										type="text"
+										name="name"
+										value={name}
+										onChange={(e: any) => {
+											onChange("name", e.target.value);
+										}}
+									></Input>
+								</FormItem>
+								<FormItem
+									top="Email"
+									status={error.name === "email" ? "error" : "default"}
+									bottom={error.name === "email" ? error.value : undefined}
+								>
+									<Input
+										disabled={isLoading}
+										type="text"
+										name="email"
+										value={email}
+										onChange={(e: any) => {
+											onChange("email", e.target.value);
+										}}
+									></Input>
+								</FormItem>
+								<FormItem
+									top="Логин"
+									status={error.name === "login" ? "error" : "default"}
+									bottom={error.name === "login" ? error.value : undefined}
+								>
+									<Input
+										disabled={isLoading}
+										type="text"
+										name="login"
+										value={login}
+										onChange={(e: any) => {
+											onChange("login", e.target.value);
+										}}
+									></Input>
+								</FormItem>
+							</FormLayout>
+						</Group>
+						<Group header={<Header mode="secondary">Копирайты</Header>}>
+							<FormLayout>
+								<FormItem
+									status={error.name === "copyrights" ? "error" : "default"}
+									bottom={
+										error.name === "copyrights"
+											? error.value
+											: "Укажите наименование лейблов (копирайт), к релизам указанных лейблов будет предоставлен доступ. Каждый лейбл вводите с новой строки."
+									}
+								>
+									<Textarea
+										name="copyrights"
+										value={copyrights}
+										onChange={(e: any) => {
+											onChange("copyrights", e.target.value);
+										}}
+									></Textarea>
+								</FormItem>
+								<FormItem>
+									<Button
+										size="l"
+										onClick={onSubmit}
+										loading={isLoading}
+										stretched
+									>
+										Создать
+									</Button>
+								</FormItem>
+							</FormLayout>
+						</Group>
+					</>
+				)) || (
+					<Placeholder
+						action={
+							<Button
+								size="m"
+								onClick={() => {
+									setActiveModal("subaccounts");
+									setIsLoading(false);
+									setName("");
+									setEmail("");
+									setLogin("");
+									setCopyrights("");
+									setTimeout(() => {
+										setSuccess(false);
+									}, 1000);
+								}}
+								mode="tertiary"
+							>
+								Назад
+							</Button>
+						}
+						icon={<Icon56CheckCircleOutline />}
+					>
+						Аккаунт успешно создан, данные отправлены на почту {email}
+					</Placeholder>
+				)}
+			</ModalPage>
+		);
+	};
 
 	const subAccounts = () => {
 		return (
@@ -180,6 +414,14 @@ function Modals({
 			>
 				{subaccounts !== null && (
 					<Group>
+						<CellButton
+							onClick={() => {
+								setActiveModal("createSubaccount");
+							}}
+							expandable
+						>
+							Создать пользователя
+						</CellButton>
 						{subaccounts.map((sub: any) => (
 							<SimpleCell
 								before={
@@ -263,7 +505,7 @@ function Modals({
 					<SimpleCell>
 						<InfoRow header="Email">{subaccount?.email}</InfoRow>
 					</SimpleCell>
-					<SimpleCell
+					<CellButton
 						onClick={() => {
 							setPopout(
 								<Alert
@@ -293,10 +535,10 @@ function Modals({
 								/>
 							);
 						}}
-						style={{ color: "var(--destructive)" }}
+						mode="danger"
 					>
 						Удалить аккаунт
-					</SimpleCell>
+					</CellButton>
 				</Group>
 			</ModalPage>
 		);
@@ -538,6 +780,7 @@ function Modals({
 			{releasePlatforms()}
 			{subAccounts()}
 			{subAccount()}
+			{createSubaccount()}
 		</ModalRoot>
 	);
 }

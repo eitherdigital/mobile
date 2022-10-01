@@ -30,7 +30,9 @@ function Report({ report }: any) {
 					disabled={isLoading}
 					style={{ color: "var(--vkui--color_icon_accent)" }}
 				>
-					{(isLoading && <Spinner />) || <Icon28ArrowDownOutline />}
+					{(isLoading && (
+						<Spinner style={{ color: "var(--vkui--color_icon_accent)" }} />
+					)) || <Icon28ArrowDownOutline />}
 				</IconButton>
 			}
 			indicator={`${report.sum} ₽`}

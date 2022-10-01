@@ -192,6 +192,33 @@ async function deleteSubaccount(id: number) {
 	return res;
 }
 
+async function createSubaccount(
+	name: string,
+	username: string,
+	email: string,
+	copyrights: string
+) {
+	const user = getUser();
+	if (!user) return { error: "not auth" };
+
+	const { data: res } = await axios.post(
+		`https://api.either.digital/user/create_user`,
+		{
+			name: name,
+			username: username,
+			email: email,
+			copyrights: copyrights,
+		},
+		{
+			headers: {
+				authorization: `Bearer ${user.accessToken}`,
+			},
+		}
+	);
+
+	return res;
+}
+
 export {
 	getNews,
 	getLastReleases,
@@ -204,4 +231,5 @@ export {
 	getTopReleases,
 	getSubaccounts,
 	deleteSubaccount,
+	createSubaccount,
 };
