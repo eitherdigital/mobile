@@ -25,15 +25,17 @@ function Report({ report }: any) {
 	return (
 		<SimpleCell
 			before={
-				<IconButton
-					onClick={download}
-					disabled={isLoading}
-					style={{ color: "var(--vkui--color_icon_accent)" }}
-				>
-					{(isLoading && (
-						<Spinner style={{ color: "var(--vkui--color_icon_accent)" }} />
-					)) || <Icon28ArrowDownOutline />}
-				</IconButton>
+				window.localStorage.getItem("app-theme") ? null : (
+					<IconButton
+						onClick={download}
+						disabled={isLoading}
+						style={{ color: "var(--vkui--color_icon_accent)" }}
+					>
+						{(isLoading && (
+							<Spinner style={{ color: "var(--vkui--color_icon_accent)" }} />
+						)) || <Icon28ArrowDownOutline />}
+					</IconButton>
+				)
 			}
 			indicator={`${report.sum} ₽`}
 		>

@@ -178,6 +178,11 @@ function Modals({
 		name: null,
 		value: null,
 	});
+	React.useEffect(() => {
+		if (!getUser()?.isLabel) {
+			setCopyrights("EITHER.DIGITAL");
+		}
+	}, []);
 	const createSubaccount = () => {
 		const onChange = (
 			name: "name" | "email" | "login" | "copyrights",
@@ -198,6 +203,8 @@ function Modals({
 					break;
 			}
 		};
+
+		const user = getUser();
 
 		const onSubmit = async () => {
 			setIsLoading(true);
@@ -341,6 +348,7 @@ function Modals({
 									<Textarea
 										name="copyrights"
 										value={copyrights}
+										disabled={user?.isLabel ? false : true}
 										onChange={(e: any) => {
 											onChange("copyrights", e.target.value);
 										}}
