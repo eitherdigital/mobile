@@ -28,6 +28,8 @@ import {
 	Button,
 	CellButton,
 	Placeholder,
+	Text,
+	Banner,
 } from "@vkontakte/vkui";
 import {
 	Icon24Dismiss,
@@ -36,6 +38,9 @@ import {
 	Icon28DoneOutline,
 	Icon28UserAddOutline,
 	Icon56CheckCircleOutline,
+	Icon28KeyOutline,
+	Icon28InfoCircleOutline,
+	Icon28HelpCircleOutline,
 } from "@vkontakte/icons";
 import { getUser, logout } from "../hooks/Auth";
 import { Icon28ChevronRightOutline } from "@vkontakte/icons";
@@ -44,7 +49,9 @@ import {
 	getSubaccounts,
 	deleteSubaccount,
 	createSubaccount as createSubaccountAPI,
+	changePassword,
 } from "../hooks/Api";
+import Icon from "../assets/images/icon.png";
 
 function Modals({
 	activeModal,
@@ -125,6 +132,15 @@ function Modals({
 							Switch
 						</SimpleCell>
 					</AdaptivityProvider>
+					<SimpleCell
+						expandable
+						onClick={() => {
+							setActiveModal("change_password");
+						}}
+						before={<Icon28KeyOutline />}
+					>
+						Сменить пароль
+					</SimpleCell>
 					{!user?.isSubkabinet && (
 						<SimpleCell
 							expandable
@@ -136,6 +152,26 @@ function Modals({
 							Субкабинеты
 						</SimpleCell>
 					)}
+					{window.localStorage.getItem("app-theme") && (
+						<SimpleCell
+							expandable
+							onClick={() => {
+								setActiveModal("about");
+							}}
+							before={<Icon28InfoCircleOutline />}
+						>
+							О приложении
+						</SimpleCell>
+					)}
+					<SimpleCell
+						expandable
+						onClick={() => {
+							openLink("mailto:mobile@either.digital");
+						}}
+						before={<Icon28HelpCircleOutline />}
+					>
+						Помощь
+					</SimpleCell>
 					<CellButton
 						onClick={() => {
 							logout();
@@ -183,6 +219,170 @@ function Modals({
 			setCopyrights("EITHER.DIGITAL");
 		}
 	}, []);
+
+	const [newPassword, setNewPassword] = React.useState<string>("");
+	const [passwordChanged, setPasswordChanged] = React.useState<boolean>(false);
+	const [passwordError, setPasswordError] = React.useState<boolean>(false);
+
+	const change_password = () => {
+		return (
+			<ModalPage
+				id={"change_password"}
+				onClose={() => {
+					setActiveModal("settings");
+					setPasswordChanged(false);
+					setNewPassword("");
+					setPasswordError(false);
+				}}
+				header={
+					<ModalPageHeader
+						before={
+							<PanelHeaderBack
+								label="Назад"
+								onClick={() => {
+									setActiveModal("settings");
+									setPasswordChanged(false);
+									setNewPassword("");
+									setPasswordError(false);
+								}}
+							/>
+						}
+					>
+						Сменить пароль
+					</ModalPageHeader>
+				}
+				settlingHeight={100}
+			>
+				<Group>
+					{passwordChanged && (
+						<Banner
+							asideMode="dismiss"
+							onDismiss={() => setPasswordChanged(false)}
+							before={
+								<Avatar
+									size={28}
+									style={{
+										backgroundImage:
+											"linear-gradient(90deg, #ffb73d 0%, #ffa000 100%)",
+									}}
+								>
+									<span style={{ color: "#fff" }}>!</span>
+								</Avatar>
+							}
+							header="Пароль был успешно изменен"
+						/>
+					)}
+					<FormLayout>
+						<FormItem
+							top="Новый пароль"
+							status={passwordError ? "error" : "default"}
+							bottom={passwordError ? "Введите пароль" : null}
+						>
+							<Input
+								type="password"
+								name="newPassword"
+								value={newPassword}
+								disabled={isLoading}
+								onChange={(e) => setNewPassword(e.target.value)}
+							/>
+						</FormItem>
+						<FormItem>
+							<Button
+								size="l"
+								onClick={async () => {
+									try {
+										setIsLoading(true);
+										setPasswordChanged(false);
+										if (newPassword.trim() === "") {
+											setPasswordError(true);
+											return;
+										} else {
+											setPasswordError(false);
+										}
+										await changePassword(newPassword);
+										setPasswordChanged(true);
+										setNewPassword("");
+									} finally {
+										setIsLoading(false);
+									}
+								}}
+								loading={isLoading}
+								stretched
+							>
+								Изменить пароль
+							</Button>
+						</FormItem>
+					</FormLayout>
+				</Group>
+			</ModalPage>
+		);
+	};
+
+	const about = () => (
+		<ModalPage
+			id={"about"}
+			onClose={() => {
+				setActiveModal("settings");
+			}}
+			header={
+				<ModalPageHeader
+					before={
+						<PanelHeaderBack
+							label="Назад"
+							onClick={() => {
+								setActiveModal("settings");
+							}}
+						/>
+					}
+				>
+					О приложении
+				</ModalPageHeader>
+			}
+			settlingHeight={100}
+		>
+			<Gradient
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+					justifyContent: "center",
+					textAlign: "center",
+					padding: 32,
+				}}
+			>
+				<Avatar src={Icon} size={96} />
+				<Text
+					style={{
+						marginBottom: 8,
+						marginTop: 20,
+						color: "var(--vkui--color_text_secondary)",
+					}}
+				>
+					Версия {window.localStorage.getItem("app-version") || "unknown"}
+				</Text>
+			</Gradient>
+			<Separator />
+			<Group>
+				<SimpleCell
+					onClick={() => {
+						openLink("mailto:mobile@either.digital");
+					}}
+				>
+					Обратная связь
+				</SimpleCell>
+				<SimpleCell
+					onClick={() => {
+						openLink(
+							"https://play.google.com/store/apps/details?id=digital.either.app"
+						);
+					}}
+				>
+					Оценить приложение
+				</SimpleCell>
+			</Group>
+		</ModalPage>
+	);
+
 	const createSubaccount = () => {
 		const onChange = (
 			name: "name" | "email" | "login" | "copyrights",
@@ -348,7 +548,7 @@ function Modals({
 									<Textarea
 										name="copyrights"
 										value={copyrights}
-										disabled={user?.isLabel ? false : true}
+										disabled={user?.isLabel ? isLoading : true}
 										onChange={(e: any) => {
 											onChange("copyrights", e.target.value);
 										}}
@@ -789,6 +989,8 @@ function Modals({
 			{subAccounts()}
 			{subAccount()}
 			{createSubaccount()}
+			{about()}
+			{change_password()}
 		</ModalRoot>
 	);
 }

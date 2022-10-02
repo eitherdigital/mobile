@@ -219,6 +219,27 @@ async function createSubaccount(
 	return res;
 }
 
+async function changePassword(password: string) {
+	const user = getUser();
+	if (!user) return { error: "not auth" };
+
+	const { data: res } = await axios.post(
+		`https://api.either.digital/user/edit_profile`,
+		{
+			name: user.name,
+			email: user.email,
+			password: password,
+		},
+		{
+			headers: {
+				authorization: `Bearer ${user.accessToken}`,
+			},
+		}
+	);
+
+	return res;
+}
+
 export {
 	getNews,
 	getLastReleases,
@@ -232,4 +253,5 @@ export {
 	getSubaccounts,
 	deleteSubaccount,
 	createSubaccount,
+	changePassword,
 };
