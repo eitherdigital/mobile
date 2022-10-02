@@ -33,7 +33,6 @@ import {
 } from "@vkontakte/vkui";
 import {
 	Icon24Dismiss,
-	Icon28SwitchOutline,
 	Icon28CopyOutline,
 	Icon28DoneOutline,
 	Icon28UserAddOutline,
@@ -51,6 +50,7 @@ import {
 	createSubaccount as createSubaccountAPI,
 	changePassword,
 } from "../hooks/Api";
+import { openLink } from "../hooks/Helpers";
 import Icon from "../assets/images/icon.png";
 
 function Modals({
@@ -123,15 +123,6 @@ function Modals({
 				<Separator />
 
 				<Group header={<Header mode="secondary">Настройки</Header>}>
-					<AdaptivityProvider>
-						<SimpleCell
-							before={<Icon28SwitchOutline />}
-							Component="label"
-							after={<Switch />}
-						>
-							Switch
-						</SimpleCell>
-					</AdaptivityProvider>
 					<SimpleCell
 						expandable
 						onClick={() => {
@@ -884,12 +875,6 @@ function Modals({
 			</Group>
 		</ModalPage>
 	);
-	const openLink = (link: string) => {
-		let a = document.createElement("a");
-		a.target = "_blank";
-		a.href = link;
-		a.click();
-	};
 	const releasePlatforms = () => {
 		let noPlatforms = false;
 		if (

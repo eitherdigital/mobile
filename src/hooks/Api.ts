@@ -240,6 +240,28 @@ async function changePassword(password: string) {
 	return res;
 }
 
+async function getPromoLink(upc: string) {
+	const user = getUser();
+	if (!user) return { error: "not auth" };
+
+	const { data: links } = await axios.get(
+		`https://api.either.digital/user/get_links`,
+		{
+			headers: {
+				authorization: `Bearer ${user.accessToken}`,
+			},
+		}
+	);
+
+	let linkUrl: string | null = null;
+	for (const link of links.links) {
+		if (link.release.upc === upc)
+			linkUrl = `https://either.fun/${link.link.token}`;
+	}
+
+	return linkUrl;
+}
+
 export {
 	getNews,
 	getLastReleases,
@@ -254,4 +276,5 @@ export {
 	deleteSubaccount,
 	createSubaccount,
 	changePassword,
+	getPromoLink,
 };

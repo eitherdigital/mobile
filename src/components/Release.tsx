@@ -7,6 +7,7 @@ import {
 	ActionSheetDefaultIosCloseItem,
 	IOS,
 	Alert,
+	ScreenSpinner,
 } from "@vkontakte/vkui";
 import {
 	Icon24MoreHorizontal,
@@ -14,9 +15,11 @@ import {
 	Icon28DeleteOutlineAndroid,
 	Icon28InfoCircleOutline,
 	Icon28CubeBoxOutline,
+	Icon24LinkedOutline,
 } from "@vkontakte/icons";
-import { deleteRelease } from "../hooks/Api";
+import { deleteRelease, getPromoLink } from "../hooks/Api";
 import { getUser } from "../hooks/Auth";
+import { openLink } from "../hooks/Helpers";
 
 export type ReleaseType = {
 	id: number;
@@ -24,6 +27,7 @@ export type ReleaseType = {
 	artists: string;
 	cover: string;
 	status: "ok" | "moderation";
+	upc: string;
 };
 
 function Release({
@@ -70,6 +74,29 @@ function Release({
 			/>
 		);
 	};
+
+	const openPromolink = async () => {
+		setPopout(<ScreenSpinner state="loading" />);
+		try {
+			const link = await getPromoLink(release.upc);
+
+			if (!link) {
+				setPopout(<ScreenSpinner state="error" />);
+				setTimeout(() => {
+					setPopout(null);
+				}, 1000);
+			} else {
+				openLink(link as string);
+				setPopout(null);
+			}
+		} catch {
+			setPopout(<ScreenSpinner state="error" />);
+			setTimeout(() => {
+				setPopout(null);
+			}, 1000);
+		}
+	};
+
 	const openMenu = () =>
 		setPopout(
 			<ActionSheet
@@ -98,6 +125,20 @@ function Release({
 					>
 						Список платформ
 					</ActionSheetItem>
+				)}
+
+				{!user?.isSubkabinet && (
+					<>
+						{release.status === "ok" && (
+							<ActionSheetItem
+								onClick={openPromolink}
+								autoclose
+								before={<Icon24LinkedOutline width={28} height={28} />}
+							>
+								Перейти к промо-ссылке
+							</ActionSheetItem>
+						)}
+					</>
 				)}
 
 				{!user?.isSubkabinet && (
