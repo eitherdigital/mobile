@@ -102,7 +102,10 @@ function Modals({
 								name="apiType"
 								value="user"
 								description="Данные будут отображаться из API для пользователей"
-								onClick={() => setApiType("user")}
+								onClick={() => {
+									setApiType("user");
+									getSubaccountsAPI();
+								}}
 								defaultChecked={getSettings().apiType === "user" ? true : false}
 							>
 								Пользователь
@@ -111,7 +114,10 @@ function Modals({
 								name="apiType"
 								value="admin"
 								description="Данные будут отображаться из API для администраторов"
-								onClick={() => setApiType("admin")}
+								onClick={() => {
+									setApiType("admin");
+									getSubaccountsAPI();
+								}}
 								defaultChecked={
 									getSettings().apiType === "admin" ? true : false
 								}
