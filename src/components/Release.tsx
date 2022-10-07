@@ -21,6 +21,7 @@ import { deleteRelease, getPromoLink } from "../hooks/Api";
 import { getUser } from "../hooks/Auth";
 import { openLink } from "../hooks/Helpers";
 import { ReleaseComponentType } from "../types";
+import { getSettings } from "../hooks/Settings";
 
 export type ReleaseType = {
 	id: number;
@@ -161,7 +162,7 @@ function Release({
 
 				{!user?.isSubkabinet && (
 					<>
-						{release.status === "ok" && (
+						{release.status === "ok" && getSettings().apiType === "user" && (
 							<ActionSheetItem
 								onClick={openDeletion}
 								autoclose

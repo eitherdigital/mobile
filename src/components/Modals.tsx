@@ -30,6 +30,7 @@ import {
 	Placeholder,
 	Text,
 	Banner,
+	Radio,
 } from "@vkontakte/vkui";
 import {
 	Icon24Dismiss,
@@ -40,6 +41,7 @@ import {
 	Icon28KeyOutline,
 	Icon28InfoCircleOutline,
 	Icon28HelpCircleOutline,
+	Icon28UserStarBadgeOutline,
 } from "@vkontakte/icons";
 import { getUser, logout, UserData } from "../hooks/Auth";
 import { Icon28ChevronRightOutline } from "@vkontakte/icons";
@@ -53,6 +55,7 @@ import {
 import { openLink } from "../hooks/Helpers";
 import Icon from "../assets/images/icon.png";
 import { ModalsType } from "../types";
+import { getSettings, setApiType } from "../hooks/Settings";
 
 function Modals({
 	activeModal,
@@ -68,6 +71,58 @@ function Modals({
 		return firstName && lastName
 			? `${firstName.charAt(0)}${lastName.charAt(0)}`
 			: firstName.charAt(0);
+	};
+	const AdminSettings = () => {
+		return (
+			<ModalPage
+				id={"admin_settings"}
+				onClose={() => {
+					setActiveModal("settings");
+				}}
+				header={
+					<ModalPageHeader
+						before={
+							<PanelHeaderBack
+								label="Назад"
+								onClick={() => {
+									setActiveModal("settings");
+								}}
+							/>
+						}
+					>
+						Настройки администратора
+					</ModalPageHeader>
+				}
+				settlingHeight={100}
+			>
+				<Group>
+					<FormLayout>
+						<FormItem top="Откуда брать данные">
+							<Radio
+								name="apiType"
+								value="user"
+								description="Данные будут отображаться из API для пользователей"
+								onClick={() => setApiType("user")}
+								defaultChecked={getSettings().apiType === "user" ? true : false}
+							>
+								Пользователь
+							</Radio>
+							<Radio
+								name="apiType"
+								value="admin"
+								description="Данные будут отображаться из API для администраторов"
+								onClick={() => setApiType("admin")}
+								defaultChecked={
+									getSettings().apiType === "admin" ? true : false
+								}
+							>
+								Администратор
+							</Radio>
+						</FormItem>
+					</FormLayout>
+				</Group>
+			</ModalPage>
+		);
 	};
 	const Settings = () => {
 		const user = getUser();
@@ -124,6 +179,17 @@ function Modals({
 				<Separator />
 
 				<Group header={<Header mode="secondary">Настройки</Header>}>
+					{user?.status === "admin" && (
+						<SimpleCell
+							expandable
+							onClick={() => {
+								setActiveModal("admin_settings");
+							}}
+							before={<Icon28UserStarBadgeOutline />}
+						>
+							Настройки администратора
+						</SimpleCell>
+					)}
 					<SimpleCell
 						expandable
 						onClick={() => {
@@ -979,6 +1045,7 @@ function Modals({
 			{createSubaccount()}
 			{about()}
 			{change_password()}
+			{AdminSettings()}
 		</ModalRoot>
 	);
 }

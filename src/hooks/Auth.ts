@@ -8,6 +8,7 @@ interface UserData {
 	isSubkabinet: number;
 	name: string;
 	username: string;
+	status: string;
 }
 
 const Store = window.localStorage;
@@ -23,6 +24,7 @@ function setAuth(user: UserData) {
 			isSubkabinet: user.isSubkabinet,
 			name: user.name,
 			username: user.username,
+			status: user.status,
 		})
 	);
 }
@@ -102,6 +104,7 @@ async function login(email: string, password: string) {
 			isLabel: user.user.isLabel,
 			isSubkabinet: user.user.isSubkabinet,
 			username: user.user.username,
+			status: user.user.status,
 		};
 
 		setAuth(userData);
@@ -142,6 +145,7 @@ async function updateAuth() {
 			isLabel: res.user.isLabel,
 			isSubkabinet: res.user.isSubkabinet,
 			username: res.user.username,
+			status: res.user.status,
 		};
 
 		setAuth(userData);
