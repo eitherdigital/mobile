@@ -41,7 +41,7 @@ import {
 	Icon28InfoCircleOutline,
 	Icon28HelpCircleOutline,
 } from "@vkontakte/icons";
-import { getUser, logout } from "../hooks/Auth";
+import { getUser, logout, UserData } from "../hooks/Auth";
 import { Icon28ChevronRightOutline } from "@vkontakte/icons";
 import NoData from "./NoData";
 import {
@@ -52,6 +52,7 @@ import {
 } from "../hooks/Api";
 import { openLink } from "../hooks/Helpers";
 import Icon from "../assets/images/icon.png";
+import { ModalsType } from "../types";
 
 function Modals({
 	activeModal,
@@ -61,7 +62,7 @@ function Modals({
 	release,
 	setActiveModal,
 	setPopout,
-}: any) {
+}: ModalsType) {
 	const getInitials = (name: string) => {
 		const [firstName, lastName] = name.split(" ");
 		return firstName && lastName
@@ -179,8 +180,8 @@ function Modals({
 
 	const [copied, setCopied] = React.useState<boolean>(false);
 	const user = getUser();
-	const [subaccounts, setSubaccounts] = React.useState<any>(null);
-	const [subaccount, setSubaccount] = React.useState<any>(null);
+	const [subaccounts, setSubaccounts] = React.useState<UserData[] | null>(null);
+	const [subaccount, setSubaccount] = React.useState<UserData | null>(null);
 	const getSubaccountsAPI = async () => {
 		const res = await getSubaccounts();
 		setSubaccounts(res.users);
@@ -489,7 +490,7 @@ function Modals({
 										type="text"
 										name="name"
 										value={name}
-										onChange={(e: any) => {
+										onChange={(e) => {
 											onChange("name", e.target.value);
 										}}
 									></Input>
@@ -504,7 +505,7 @@ function Modals({
 										type="text"
 										name="email"
 										value={email}
-										onChange={(e: any) => {
+										onChange={(e) => {
 											onChange("email", e.target.value);
 										}}
 									></Input>
@@ -519,7 +520,7 @@ function Modals({
 										type="text"
 										name="login"
 										value={login}
-										onChange={(e: any) => {
+										onChange={(e) => {
 											onChange("login", e.target.value);
 										}}
 									></Input>
@@ -540,7 +541,7 @@ function Modals({
 										name="copyrights"
 										value={copyrights}
 										disabled={user?.isLabel ? isLoading : true}
-										onChange={(e: any) => {
+										onChange={(e) => {
 											onChange("copyrights", e.target.value);
 										}}
 									></Textarea>
@@ -621,7 +622,7 @@ function Modals({
 						>
 							Создать пользователя
 						</CellButton>
-						{subaccounts.map((sub: any) => (
+						{subaccounts.map((sub) => (
 							<SimpleCell
 								before={
 									<InitialsAvatar
@@ -719,6 +720,7 @@ function Modals({
 											autoclose: true,
 											mode: "destructive",
 											action: async () => {
+												if (!subaccount) return;
 												await deleteSubaccount(subaccount.id);
 												await getSubaccountsAPI();
 												setActiveModal("subaccounts");
@@ -801,6 +803,7 @@ function Modals({
 						release?.upc
 							? () => {
 									if (copied) return;
+									if (!release.upc) return;
 									navigator.clipboard.writeText(release.upc);
 									setCopied(true);
 									setTimeout(() => {
@@ -914,7 +917,7 @@ function Modals({
 					{release?.apple && (
 						<SimpleCell
 							onClick={() => {
-								openLink(release.apple);
+								if (release.apple) openLink(release.apple);
 							}}
 							after={<Icon28ChevronRightOutline />}
 						>
@@ -924,7 +927,7 @@ function Modals({
 					{release?.deezer && (
 						<SimpleCell
 							onClick={() => {
-								openLink(release.deezer);
+								if (release.deezer) openLink(release.deezer);
 							}}
 							after={<Icon28ChevronRightOutline />}
 						>
@@ -934,7 +937,7 @@ function Modals({
 					{release?.spotify && (
 						<SimpleCell
 							onClick={() => {
-								openLink(release.spotify);
+								if (release.spotify) openLink(release.spotify);
 							}}
 							after={<Icon28ChevronRightOutline />}
 						>
@@ -944,7 +947,7 @@ function Modals({
 					{release?.vk_music && (
 						<SimpleCell
 							onClick={() => {
-								openLink(release.vk_music);
+								if (release.vk_music) openLink(release.vk_music);
 							}}
 							after={<Icon28ChevronRightOutline />}
 						>
@@ -954,7 +957,7 @@ function Modals({
 					{release?.yandex && (
 						<SimpleCell
 							onClick={() => {
-								openLink(release.yandex);
+								if (release.yandex) openLink(release.yandex);
 							}}
 							after={<Icon28ChevronRightOutline />}
 						>

@@ -20,14 +20,32 @@ import {
 import { deleteRelease, getPromoLink } from "../hooks/Api";
 import { getUser } from "../hooks/Auth";
 import { openLink } from "../hooks/Helpers";
+import { ReleaseComponentType } from "../types";
 
 export type ReleaseType = {
 	id: number;
+	user_id: number;
+	cover: string;
 	title: string;
 	artists: string;
-	cover: string;
-	status: "ok" | "moderation";
-	upc: string;
+	version?: string;
+	genre: string;
+	date: string;
+	type: string;
+	comment?: string;
+	upc?: string;
+	status: string;
+	created_at: string;
+	updated_at: string;
+	copyright?: string;
+	preorder_date?: string;
+	premiere_for_russia: number;
+	realtime: number;
+	apple?: string;
+	yandex?: string;
+	spotify?: string;
+	vk_music?: string;
+	deezer?: string;
 };
 
 function Release({
@@ -37,14 +55,7 @@ function Release({
 	refreshReleases,
 	setActiveModal,
 	setRelease,
-}: {
-	release: ReleaseType;
-	platform: any;
-	setPopout: any;
-	refreshReleases: any;
-	setActiveModal: any;
-	setRelease: any;
-}) {
+}: ReleaseComponentType) {
 	const onClose = () => setPopout(null);
 	const user = getUser();
 
@@ -78,6 +89,13 @@ function Release({
 	const openPromolink = async () => {
 		setPopout(<ScreenSpinner state="loading" />);
 		try {
+			if (!release.upc) {
+				setPopout(<ScreenSpinner state="error" />);
+				setTimeout(() => {
+					setPopout(null);
+				}, 1000);
+				return;
+			}
 			const link = await getPromoLink(release.upc);
 
 			if (!link) {

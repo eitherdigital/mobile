@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import {
 	withAdaptivity,
 	usePlatform,
@@ -48,7 +48,7 @@ const Authed = withAdaptivity(
 		};
 		const isDesktop = viewWidth >= ViewWidth.TABLET;
 		const hasHeader = platform !== VKCOM;
-		const [popout, setPopout] = React.useState<any>(null);
+		const [popout, setPopout] = React.useState<ReactElement | null>(null);
 		const [release, setRelease] = React.useState<ReleaseType | null>(null);
 		const user = getUser();
 
