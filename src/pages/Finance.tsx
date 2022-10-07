@@ -3,12 +3,13 @@ import { ScreenSpinner, PullToRefresh, Group, Header } from "@vkontakte/vkui";
 import { getReports } from "../hooks/Api";
 import NoData from "../components/NoData";
 import Report from "../components/Report";
+import { ReportType } from "../types";
 
 function Finance() {
 	const [isLoading, setIsLoading] = React.useState<boolean>(false);
 	const [isRefreshing, setIsRefreshing] = React.useState<boolean>(false);
 	const [error, setError] = React.useState<boolean>(false);
-	const [reports, setReports] = React.useState<any>(null);
+	const [reports, setReports] = React.useState<ReportType[] | null>(null);
 
 	React.useEffect(() => {
 		const getData = async () => {
@@ -61,7 +62,7 @@ function Finance() {
 								<NoData caption="Отчетов не найдено" />
 							)) || (
 								<Group header={<Header mode="secondary">Отчеты</Header>}>
-									{reports.map((report: any) => (
+									{reports.map((report) => (
 										<Report report={report} />
 									))}
 								</Group>

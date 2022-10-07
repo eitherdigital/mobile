@@ -10,14 +10,21 @@ import {
 import { getModeration, getReleases } from "../hooks/Api";
 import NoData from "../components/NoData";
 import Release, { ReleaseType } from "../components/Release";
+import { CatalogType } from "../types";
 
-function Catalog({ setActiveModal, platform, setPopout, setRelease }: any) {
+function Catalog({
+	setActiveModal,
+	platform,
+	setPopout,
+	setRelease,
+}: CatalogType) {
 	const [selected, setSelected] =
 		React.useState<"catalog" | "moderation">("catalog");
 	const [isLoading, setIsLoading] = React.useState<boolean>(false);
 	const [error, setError] = React.useState<boolean>(false);
-	const [releases, setReleases] = React.useState<any>(null);
-	const [moderation, setModeration] = React.useState<any>(null);
+	const [releases, setReleases] = React.useState<ReleaseType[] | null>(null);
+	const [moderation, setModeration] =
+		React.useState<ReleaseType[] | null>(null);
 
 	const getData = async () => {
 		setIsLoading(true);

@@ -3,8 +3,9 @@ import { IconButton, SimpleCell, Spinner } from "@vkontakte/vkui";
 import { Icon28ArrowDownOutline } from "@vkontakte/icons";
 import fileDownload from "js-file-download";
 import axios from "axios";
+import { ReportType } from "../types";
 
-function Report({ report }: any) {
+function Report({ report }: { report: ReportType }) {
 	const [isLoading, setIsLoading] = React.useState<boolean>(false);
 	const download = () => {
 		setIsLoading(true);

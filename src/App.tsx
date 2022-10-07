@@ -35,15 +35,17 @@ import NoData from "./components/NoData";
 import Catalog from "./pages/Catalog";
 import Finance from "./pages/Finance";
 import Analytics from "./pages/Analytics";
+import { ViewWidthType } from "./types";
 
 const Authed = withAdaptivity(
-	({ viewWidth }: any) => {
+	({ viewWidth }: ViewWidthType) => {
 		const platform = usePlatform();
 		const isMobile = viewWidth <= ViewWidth.MOBILE;
 		const [activeModal, setActiveModal] = React.useState<string | null>(null);
 		const [activeStory, setActiveStory] = React.useState<string>("dashboard");
-		const onStoryChange = (e: any) =>
+		const onStoryChange = (e: any) => {
 			setActiveStory(e.currentTarget.dataset.story);
+		};
 		const isDesktop = viewWidth >= ViewWidth.TABLET;
 		const hasHeader = platform !== VKCOM;
 		const [popout, setPopout] = React.useState<any>(null);

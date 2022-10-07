@@ -12,12 +12,13 @@ import moment from "moment";
 import "moment/locale/ru";
 import parse from "html-react-parser";
 import NoData from "../components/NoData";
+import { NewsType } from "../types";
 
 function News() {
 	moment.locale("ru");
 	const [isLoading, setIsLoading] = React.useState<boolean>(false);
 	const [error, setError] = React.useState<boolean>(false);
-	const [news, setNews] = React.useState<any>(null);
+	const [news, setNews] = React.useState<NewsType[] | null>(null);
 	React.useEffect(() => {
 		const getData = async () => {
 			setIsLoading(true);
@@ -66,7 +67,7 @@ function News() {
 							<>
 								{news.length === 0 && <NoData caption="Новостей не найдено" />}
 								<CardGrid size="l">
-									{news.map((item: any) => (
+									{news.map((item) => (
 										<ContentCard
 											header={item.title}
 											text={parse(item.body)}

@@ -17,6 +17,7 @@ import "moment/locale/ru";
 import parse from "html-react-parser";
 import NoData from "../components/NoData";
 import Release, { ReleaseType } from "../components/Release";
+import { DashboardType, NewsType } from "../types";
 
 function Dashboard({
 	setActiveModal,
@@ -24,11 +25,11 @@ function Dashboard({
 	platform,
 	setPopout,
 	setRelease,
-}: any) {
+}: DashboardType) {
 	const [isLoading, setIsLoading] = React.useState<boolean>(false);
 	const [error, setError] = React.useState<boolean>(false);
-	const [news, setNews] = React.useState<any>(null);
-	const [releases, setReleases] = React.useState<any>(null);
+	const [news, setNews] = React.useState<NewsType[] | null>(null);
+	const [releases, setReleases] = React.useState<ReleaseType[] | null>(null);
 
 	moment.locale("ru");
 

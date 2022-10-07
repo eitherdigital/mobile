@@ -31,6 +31,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import NoData from "../components/NoData";
+import { DateStreamType, TopReleaseType } from "../types";
 
 function Analytics() {
 	ChartJS.register(
@@ -66,8 +67,10 @@ function Analytics() {
 	const [allStreams, setAllStreams] = React.useState<number>(0);
 	const [payStreams, setPayStreams] = React.useState<number>(0);
 
-	const [dateStreams, setDateStreams] = React.useState<any>(null);
-	const [topReleases, setTopReleases] = React.useState<any>(null);
+	const [dateStreams, setDateStreams] =
+		React.useState<DateStreamType | null>(null);
+	const [topReleases, setTopReleases] =
+		React.useState<TopReleaseType[] | null>(null);
 
 	React.useEffect(() => {
 		const getData = async () => {
@@ -107,12 +110,12 @@ function Analytics() {
 					setError(true);
 					return;
 				}
-				let pays: any = [];
-				let alls: any = [];
-				let dates: any = [];
-				let lastDate: any = null;
-				let streamsPayLast: any = 0;
-				let streamsAllLast: any = 0;
+				let pays: number[] = [];
+				let alls: number[] = [];
+				let dates: string[] = [];
+				let lastDate: string = "";
+				let streamsPayLast: number = 0;
+				let streamsAllLast: number = 0;
 				if (dateStreams.streams.length !== 0) {
 					lastDate = dateStreams.streams[0].date;
 				}
@@ -204,12 +207,12 @@ function Analytics() {
 				setError(true);
 				return;
 			}
-			let pays: any = [];
-			let alls: any = [];
-			let dates: any = [];
-			let lastDate: any = null;
-			let streamsPayLast: any = 0;
-			let streamsAllLast: any = 0;
+			let pays: number[] = [];
+			let alls: number[] = [];
+			let dates: string[] = [];
+			let lastDate: string = "";
+			let streamsPayLast: number = 0;
+			let streamsAllLast: number = 0;
 			if (dateStreams.streams.length !== 0) {
 				lastDate = dateStreams.streams[0].date;
 			}
@@ -293,14 +296,18 @@ function Analytics() {
 									>
 										Платные прослушивания
 									</SimpleCell>
-									{(dateStreams.labels.length !== 0 && (
-										<Line options={options} data={dateStreams} />
-									)) || <NoData caption="Нет данных о прослушиваниях" />}
+									{dateStreams !== null && (
+										<>
+											{(dateStreams.labels.length !== 0 && (
+												<Line options={options} data={dateStreams} />
+											)) || <NoData caption="Нет данных о прослушиваниях" />}
+										</>
+									)}
 								</Group>
 								<Group header={<Header mode="secondary">Топ релизов</Header>}>
-									{(topReleases.length !== 0 && (
+									{(topReleases?.length !== 0 && (
 										<CardGrid size="l">
-											{topReleases.map((release: any) => (
+											{topReleases?.map((release) => (
 												<ContentCard
 													header={`${release.artists} – ${release.title}`}
 													caption={`${release.all_streams} прослушиваний`}

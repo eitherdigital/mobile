@@ -69,7 +69,7 @@ function Login() {
 								name="email"
 								disabled={isLoading}
 								value={email}
-								onChange={(e: any) => setEmail(e.currentTarget.value)}
+								onChange={(e) => setEmail(e.currentTarget.value)}
 							/>
 						</FormItem>
 						<FormItem
@@ -82,7 +82,7 @@ function Login() {
 								name="password"
 								disabled={isLoading}
 								value={password}
-								onChange={(e: any) => setPassword(e.currentTarget.value)}
+								onChange={(e) => setPassword(e.currentTarget.value)}
 							/>
 						</FormItem>
 						<FormItem>
