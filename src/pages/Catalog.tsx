@@ -81,9 +81,11 @@ function Catalog({
 		const value = e ? e.target.value : searchValue;
 		if (e) {
 			setSearchValue(value);
-			if (value.trim() === "") setSearched(null);
 		}
-		if (value.trim() === "") setSearched(null);
+		if (value.trim() === "") {
+			setSearched(null);
+			return;
+		}
 		let searched: ReleaseType[] = [];
 		let releasesData = selected === "catalog" ? releases : moderation;
 		if (!releasesData) return;
@@ -111,6 +113,8 @@ function Catalog({
 					selected={selected === "catalog"}
 					onClick={() => {
 						setSelected("catalog");
+						setSearchValue("");
+						setSearched(null);
 					}}
 				>
 					Релизы
@@ -119,6 +123,8 @@ function Catalog({
 					selected={selected === "moderation"}
 					onClick={() => {
 						setSelected("moderation");
+						setSearchValue("");
+						setSearched(null);
 					}}
 				>
 					Модерация
