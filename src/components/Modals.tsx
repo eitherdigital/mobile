@@ -236,13 +236,7 @@ function Modals({
 					>
 						Помощь
 					</SimpleCell>
-					<CellButton
-						onClick={() => {
-							logout();
-							window.location.href = "/";
-						}}
-						mode="danger"
-					>
+					<CellButton onClick={logout} mode="danger">
 						Выйти из аккаунта
 					</CellButton>
 				</Group>

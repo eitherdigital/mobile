@@ -40,8 +40,21 @@ function getUser() {
 	}
 }
 
-function logout() {
+async function logout() {
+	const user = getUser();
+	if (!user) return { error: "what?" };
+	await axios.post(
+		"https://api.either.digital/user/set_push_token",
+		{ token: "null" },
+		{
+			headers: {
+				authorization: `Bearer ${user.accessToken}`,
+			},
+		}
+	);
 	Store.clear();
+
+	window.location.href = "/";
 }
 
 async function getAuth() {
