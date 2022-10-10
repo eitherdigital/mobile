@@ -76,7 +76,8 @@ function Analytics() {
 		const getData = async () => {
 			try {
 				setIsLoading(true);
-				const releases = await getReleases();
+				if(!releases) {
+                                    const releases = await getReleases();
 				if (releases.error) {
 					setError(true);
 					return;
@@ -91,6 +92,7 @@ function Analytics() {
 					});
 				}
 				setReleases(releasesArray);
+                                }
 
 				const streams = await getStreams(
 					release !== "all" ? release : undefined
