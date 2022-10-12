@@ -67,8 +67,9 @@ function News() {
 							<>
 								{news.length === 0 && <NoData caption="Новостей не найдено" />}
 								<CardGrid size="l">
-									{news.map((item) => (
+									{news.map((item, key) => (
 										<ContentCard
+											key={key}
 											header={item.title}
 											text={parse(item.body)}
 											subtitle={moment(item.created_at).format("LL")}

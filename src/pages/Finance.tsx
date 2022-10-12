@@ -62,8 +62,8 @@ function Finance() {
 								<NoData caption="Отчетов не найдено" />
 							)) || (
 								<Group header={<Header mode="secondary">Отчеты</Header>}>
-									{reports.map((report) => (
-										<Report report={report} />
+									{reports.map((report, key) => (
+										<Report key={key} report={report} />
 									))}
 								</Group>
 							)}

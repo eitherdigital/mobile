@@ -688,8 +688,9 @@ function Modals({
 						>
 							Создать пользователя
 						</CellButton>
-						{subaccounts.map((sub) => (
+						{subaccounts.map((sub, key) => (
 							<SimpleCell
+								key={key}
 								before={
 									<InitialsAvatar
 										gradientColor={calcInitialsAvatarColor(sub.id)}

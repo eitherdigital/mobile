@@ -55,6 +55,10 @@ function Catalog({
 		getData();
 	}, []);
 
+	React.useEffect(() => {
+		setPopout(isLoading && <ScreenSpinner state="loading" />);
+	}, [isLoading]);
+
 	const [isRefreshing, setIsRefreshing] = React.useState<boolean>(false);
 	const onRefresh = React.useCallback(async () => {
 		setIsRefreshing(true);
@@ -105,7 +109,6 @@ function Catalog({
 
 	return (
 		<>
-			{isLoading && <ScreenSpinner state="loading" />}
 			<PanelHeader>Каталог</PanelHeader>
 
 			<Group>
@@ -147,7 +150,7 @@ function Catalog({
 													<NoData caption="Релизов не найдено" />
 												)) || (
 													<>
-														{releases.map((release: ReleaseType) => (
+														{releases.map((release: ReleaseType, key) => (
 															<Release
 																refreshReleases={getData}
 																release={release}
@@ -155,6 +158,7 @@ function Catalog({
 																setPopout={setPopout}
 																setRelease={setRelease}
 																setActiveModal={setActiveModal}
+																key={key}
 															/>
 														))}
 													</>
@@ -170,8 +174,9 @@ function Catalog({
 													<NoData caption="Релизов не найдено" />
 												)) || (
 													<>
-														{moderation.map((release: ReleaseType) => (
+														{moderation.map((release: ReleaseType, key) => (
 															<Release
+																key={key}
 																refreshReleases={getData}
 																release={release}
 																platform={platform}
@@ -193,8 +198,9 @@ function Catalog({
 									<NoData caption="Релизов не найдено" />
 								)) || (
 									<>
-										{searched?.map((release: ReleaseType) => (
+										{searched?.map((release: ReleaseType, key) => (
 											<Release
+												key={key}
 												refreshReleases={getData}
 												release={release}
 												platform={platform}

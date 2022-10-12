@@ -310,8 +310,9 @@ function Analytics() {
 								<Group header={<Header mode="secondary">Топ релизов</Header>}>
 									{(topReleases?.length !== 0 && (
 										<CardGrid size="l">
-											{topReleases?.map((release) => (
+											{topReleases?.map((release, key) => (
 												<ContentCard
+													key={key}
 													header={`${release.artists} – ${release.title}`}
 													caption={`${release.all_streams} прослушиваний`}
 												/>

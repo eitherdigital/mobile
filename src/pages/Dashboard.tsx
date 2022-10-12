@@ -129,8 +129,9 @@ function Dashboard({
 										<NoData caption="Релизов не найдено" />
 									)) || (
 										<>
-											{releases.map((release: ReleaseType) => (
+											{releases.map((release: ReleaseType, key) => (
 												<Release
+													key={key}
 													refreshReleases={getData}
 													release={release}
 													platform={platform}
