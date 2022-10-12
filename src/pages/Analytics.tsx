@@ -76,23 +76,23 @@ function Analytics() {
 		const getData = async () => {
 			try {
 				setIsLoading(true);
-				if(!releases) {
-                                    const releases = await getReleases();
-				if (releases.error) {
-					setError(true);
-					return;
+				if (!releases) {
+					const releases = await getReleases();
+					if (releases.error) {
+						setError(true);
+						return;
+					}
+					let releasesArray: { value: string; label: string }[] = [
+						{ value: "all", label: "Все релизы" },
+					];
+					for (const release of releases.releases) {
+						releasesArray.push({
+							value: `${release.id}`,
+							label: `${release.artists} - ${release.title}`,
+						});
+					}
+					setReleases(releasesArray);
 				}
-				let releasesArray: { value: string; label: string }[] = [
-					{ value: "all", label: "Все релизы" },
-				];
-				for (const release of releases.releases) {
-					releasesArray.push({
-						value: `${release.id}`,
-						label: `${release.artists} - ${release.title}`,
-					});
-				}
-				setReleases(releasesArray);
-                                }
 
 				const streams = await getStreams(
 					release !== "all" ? release : undefined
