@@ -3,10 +3,10 @@ import {
 	PanelHeader,
 	ScreenSpinner,
 	PullToRefresh,
-	TabsItem,
-	Tabs,
 	Group,
 	Search,
+	SegmentedControl,
+	Div,
 } from "@vkontakte/vkui";
 import { getModeration, getReleases } from "../hooks/Api";
 import NoData from "../components/NoData";
@@ -108,29 +108,32 @@ function Catalog({
 			{isLoading && <ScreenSpinner state="loading" />}
 			<PanelHeader>Каталог</PanelHeader>
 
-			<Tabs>
-				<TabsItem
-					selected={selected === "catalog"}
-					onClick={() => {
-						setSelected("catalog");
-						setSearchValue("");
-						setSearched(null);
-					}}
-				>
-					Релизы
-				</TabsItem>
-				<TabsItem
-					selected={selected === "moderation"}
-					onClick={() => {
-						setSelected("moderation");
-						setSearchValue("");
-						setSearched(null);
-					}}
-				>
-					Модерация
-				</TabsItem>
-			</Tabs>
-			<Search value={searchValue} onChange={onSearch} />
+			<Group>
+				<Div>
+					<SegmentedControl
+						onChange={(value) =>
+							setSelected(
+								value === "catalog" || value === "moderation"
+									? value
+									: "catalog"
+							)
+						}
+						value={selected}
+						options={[
+							{
+								label: "Релизы",
+								value: "catalog",
+							},
+							{
+								label: "Модерация",
+								value: "moderation",
+							},
+						]}
+					/>
+				</Div>
+				<Search value={searchValue} onChange={onSearch} />
+			</Group>
+
 			<PullToRefresh isFetching={isRefreshing} onRefresh={onRefresh}>
 				{(!error && (
 					<>
