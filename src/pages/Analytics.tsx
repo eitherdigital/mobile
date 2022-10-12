@@ -1,5 +1,4 @@
 import React, { ChangeEvent } from "react";
-import { ReleaseType } from "../components/Release";
 import {
 	getDateStreams,
 	getReleases,
@@ -172,6 +171,7 @@ function Analytics() {
 		};
 
 		getData();
+		// eslint-disable-next-line
 	}, [release]);
 
 	const onRefresh = async () => {
