@@ -9,7 +9,7 @@ import {
 	PanelHeader,
 	ScreenSpinner,
 	PullToRefresh,
-	CustomSelect,
+	Select,
 	FormItem,
 	Group,
 	SimpleCell,
@@ -272,12 +272,13 @@ function Analytics() {
 			{isLoading && <ScreenSpinner state="loading" />}
 			<PullToRefresh isFetching={isRefreshing} onRefresh={onRefresh}>
 				<FormItem top="Фильтры">
-					<CustomSelect
-						placeholder="Введите название релиза"
+					<Select
+						placeholder="Выберите релиз"
 						searchable
 						onChange={(e: ChangeEvent<HTMLSelectElement>) => {
 							setRelease(e.target.value);
 						}}
+						value={release}
 						options={
 							releases ? releases : [{ value: "all", label: "Все релизы" }]
 						}
