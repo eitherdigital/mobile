@@ -23,7 +23,6 @@ import {
 	Cell,
 	SelectMimicry,
 	Search,
-	Footer,
 	PanelHeaderBack,
 } from "@vkontakte/vkui";
 import {
@@ -412,6 +411,8 @@ function Analytics() {
 												{searched?.map((item) => (
 													<Cell
 														onClick={() => {
+															setSearched(null);
+															setSearch("");
 															setRelease(item);
 															setActiveView("analyticsPage");
 														}}

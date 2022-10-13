@@ -11,8 +11,6 @@ export type ModalsType = {
 	platform: PlatformType;
 	isMobile: boolean;
 	release: ReleaseType | null;
-	setActiveModal: any;
-	setPopout: any;
 };
 
 export type ReleaseComponentType = {

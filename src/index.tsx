@@ -2,10 +2,14 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { ConfigProvider, AdaptivityProvider, AppRoot, WebviewType } from "@vkontakte/vkui";
+import {
+	ConfigProvider,
+	AdaptivityProvider,
+	AppRoot,
+	WebviewType,
+} from "@vkontakte/vkui";
 import "@vkontakte/vkui/dist/vkui.css";
 import { getTheme } from "./hooks/Theme";
-import "./css/Either.css";
 
 const root = ReactDOM.createRoot(
 	document.getElementById("root") as HTMLElement
