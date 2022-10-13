@@ -22,6 +22,9 @@ import {
 	List,
 	Cell,
 	SelectMimicry,
+	Search,
+	Footer,
+	PanelHeaderBack,
 } from "@vkontakte/vkui";
 import {
 	Chart as ChartJS,
@@ -65,6 +68,9 @@ function Analytics() {
 	const [isRefreshing, setIsRefreshing] = React.useState<boolean>(false);
 	const [error, setError] = React.useState<boolean>(false);
 	const [activeView, setActiveView] = React.useState<string>("analyticsPage");
+	const [search, setSearch] = React.useState<string>("");
+	const [searched, setSearched] =
+		React.useState<{ value: string; label: string }[] | null>(null);
 
 	const [releases, setReleases] =
 		React.useState<{ value: string; label: string }[] | null>(null);
@@ -348,24 +354,80 @@ function Analytics() {
 			</View>
 			<View activePanel="selectRelease" id="selectRelease">
 				<Panel id="selectRelease">
-					<PanelHeader>Выбор релиза</PanelHeader>
+					<PanelHeader
+						before={
+							<PanelHeaderBack
+								onClick={() => {
+									setActiveView("analyticsPage");
+									setSearched(null);
+									setSearch("");
+								}}
+							/>
+						}
+					>
+						Выбор релиза
+					</PanelHeader>
 					<Group>
+						<Search
+							value={search}
+							onChange={(e) => {
+								setSearch(e.target.value);
+								const search = e.target.value.toLowerCase();
+								if (search.trim() === "") {
+									setSearched(null);
+									return;
+								}
+								setSearched(
+									releases?.filter(
+										({ label }) => label.toLowerCase().indexOf(search) > -1
+									) as { value: string; label: string }[]
+								);
+							}}
+						/>
 						<List>
-							{releases?.map((item) => (
-								<Cell
-									onClick={() => {
-										setRelease(item);
-										setActiveView("analyticsPage");
-									}}
-									after={
-										release.value === item.value ? (
-											<Icon24Done fill="var(--vkui--color_icon_accent)" />
-										) : null
-									}
-								>
-									{item.label}
-								</Cell>
-							))}
+							{(!searched && (
+								<>
+									{releases?.map((item) => (
+										<Cell
+											onClick={() => {
+												setRelease(item);
+												setActiveView("analyticsPage");
+												setSearched(null);
+												setSearch("");
+											}}
+											after={
+												release.value === item.value ? (
+													<Icon24Done fill="var(--vkui--color_icon_accent)" />
+												) : null
+											}
+										>
+											{item.label}
+										</Cell>
+									))}
+								</>
+							)) || (
+									<>
+										{searched?.length !== 0 && (
+											<>
+												{searched?.map((item) => (
+													<Cell
+														onClick={() => {
+															setRelease(item);
+															setActiveView("analyticsPage");
+														}}
+														after={
+															release.value === item.value ? (
+																<Icon24Done fill="var(--vkui--color_icon_accent)" />
+															) : null
+														}
+													>
+														{item.label}
+													</Cell>
+												))}
+											</>
+										)}
+									</>
+								) || <NoData caption="Релизов не найдено" />}
 						</List>
 					</Group>
 				</Panel>
