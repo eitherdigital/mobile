@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React from "react";
 import {
 	getDateStreams,
 	getReleases,
@@ -9,7 +9,6 @@ import {
 	PanelHeader,
 	ScreenSpinner,
 	PullToRefresh,
-	Select,
 	FormItem,
 	Group,
 	SimpleCell,
@@ -17,6 +16,12 @@ import {
 	Header,
 	CardGrid,
 	ContentCard,
+	Root,
+	View,
+	Panel,
+	List,
+	Cell,
+	SelectMimicry,
 } from "@vkontakte/vkui";
 import {
 	Chart as ChartJS,
@@ -31,6 +36,7 @@ import {
 import { Line } from "react-chartjs-2";
 import NoData from "../components/NoData";
 import { DateStreamType, TopReleaseType } from "../types";
+import { Icon24Done } from "@vkontakte/icons";
 
 function Analytics() {
 	ChartJS.register(
@@ -58,10 +64,14 @@ function Analytics() {
 	const [isLoading, setIsLoading] = React.useState<boolean>(true);
 	const [isRefreshing, setIsRefreshing] = React.useState<boolean>(false);
 	const [error, setError] = React.useState<boolean>(false);
+	const [activeView, setActiveView] = React.useState<string>("analyticsPage");
 
 	const [releases, setReleases] =
 		React.useState<{ value: string; label: string }[] | null>(null);
-	const [release, setRelease] = React.useState<string>("all");
+	const [release, setRelease] = React.useState<{
+		value: string;
+		label: string;
+	}>({ value: "all", label: "Все релизы" });
 
 	const [allStreams, setAllStreams] = React.useState<number>(0);
 	const [payStreams, setPayStreams] = React.useState<number>(0);
@@ -94,7 +104,7 @@ function Analytics() {
 				}
 
 				const streams = await getStreams(
-					release !== "all" ? release : undefined
+					release.value !== "all" ? release.value : undefined
 				);
 				if (streams.error) {
 					setError(true);
@@ -104,7 +114,7 @@ function Analytics() {
 				setPayStreams(streams.pay_streams);
 
 				const dateStreams = await getDateStreams(
-					release !== "all" ? release : undefined
+					release.value !== "all" ? release.value : undefined
 				);
 
 				if (dateStreams.error) {
@@ -154,7 +164,7 @@ function Analytics() {
 				});
 
 				const top = await getTopReleases(
-					release !== "all" ? release : undefined
+					release.value !== "all" ? release.value : undefined
 				);
 				if (top.error) {
 					setError(true);
@@ -193,7 +203,9 @@ function Analytics() {
 			}
 			setReleases(releasesArray);
 
-			const streams = await getStreams(release !== "all" ? release : undefined);
+			const streams = await getStreams(
+				release.value !== "all" ? release.value : undefined
+			);
 			if (streams.error) {
 				setError(true);
 				return;
@@ -202,7 +214,7 @@ function Analytics() {
 			setPayStreams(streams.pay_streams);
 
 			const dateStreams = await getDateStreams(
-				release !== "all" ? release : undefined
+				release.value !== "all" ? release.value : undefined
 			);
 
 			if (dateStreams.error) {
@@ -251,7 +263,9 @@ function Analytics() {
 				],
 			});
 
-			const top = await getTopReleases(release !== "all" ? release : undefined);
+			const top = await getTopReleases(
+				release.value !== "all" ? release.value : undefined
+			);
 			if (top.error) {
 				setError(true);
 				return;
@@ -267,65 +281,96 @@ function Analytics() {
 	};
 
 	return (
-		<>
-			<PanelHeader>Аналитика</PanelHeader>
-			{isLoading && <ScreenSpinner state="loading" />}
-			<PullToRefresh isFetching={isRefreshing} onRefresh={onRefresh}>
-				<FormItem top="Фильтры">
-					<Select
-						placeholder="Выберите релиз"
-						searchable
-						onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-							setRelease(e.target.value);
-						}}
-						value={release}
-						options={
-							releases ? releases : [{ value: "all", label: "Все релизы" }]
-						}
-					/>
-				</FormItem>
-				{!isLoading && (
-					<>
-						{(!error && (
+		<Root activeView={activeView}>
+			<View activePanel="analyticsPage" id="analyticsPage">
+				<Panel id="analyticsPage">
+					<PanelHeader>Аналитика</PanelHeader>
+					{isLoading && <ScreenSpinner state="loading" />}
+					<PullToRefresh isFetching={isRefreshing} onRefresh={onRefresh}>
+						<FormItem top="Фильтры">
+							<SelectMimicry
+								placeholder="Выберите релиз"
+								onClick={() => setActiveView("selectRelease")}
+							>
+								{release.label}
+							</SelectMimicry>
+						</FormItem>
+						{!isLoading && (
 							<>
-								<Group>
-									<SimpleCell
-										indicator={<Counter mode="primary">{allStreams}</Counter>}
-									>
-										Все прослушивания
-									</SimpleCell>
-									<SimpleCell
-										indicator={<Counter mode="primary">{payStreams}</Counter>}
-									>
-										Платные прослушивания
-									</SimpleCell>
-									{dateStreams !== null && (
-										<>
-											{(dateStreams.labels.length !== 0 && (
-												<Line options={options} data={dateStreams} />
-											)) || <NoData caption="Нет данных о прослушиваниях" />}
-										</>
-									)}
-								</Group>
-								<Group header={<Header mode="secondary">Топ релизов</Header>}>
-									{(topReleases?.length !== 0 && (
-										<CardGrid size="l">
-											{topReleases?.map((release, key) => (
-												<ContentCard
-													key={key}
-													header={`${release.artists} – ${release.title}`}
-													caption={`${release.all_streams} прослушиваний`}
-												/>
-											))}
-										</CardGrid>
-									)) || <NoData caption="Нет данных" />}
-								</Group>
+								{(!error && (
+									<>
+										<Group>
+											<SimpleCell
+												indicator={
+													<Counter mode="primary">{allStreams}</Counter>
+												}
+											>
+												Все прослушивания
+											</SimpleCell>
+											<SimpleCell
+												indicator={
+													<Counter mode="primary">{payStreams}</Counter>
+												}
+											>
+												Платные прослушивания
+											</SimpleCell>
+											{dateStreams !== null && (
+												<>
+													{(dateStreams.labels.length !== 0 && (
+														<Line options={options} data={dateStreams} />
+													)) || (
+														<NoData caption="Нет данных о прослушиваниях" />
+													)}
+												</>
+											)}
+										</Group>
+										<Group
+											header={<Header mode="secondary">Топ релизов</Header>}
+										>
+											{(topReleases?.length !== 0 && (
+												<CardGrid size="l">
+													{topReleases?.map((release, key) => (
+														<ContentCard
+															key={key}
+															header={`${release.artists} – ${release.title}`}
+															caption={`${release.all_streams} прослушиваний`}
+														/>
+													))}
+												</CardGrid>
+											)) || <NoData caption="Нет данных" />}
+										</Group>
+									</>
+								)) || <NoData caption="Произошла ошибка, попробуйте позже." />}
 							</>
-						)) || <NoData caption="Произошла ошибка, попробуйте позже." />}
-					</>
-				)}
-			</PullToRefresh>
-		</>
+						)}
+					</PullToRefresh>
+				</Panel>
+			</View>
+			<View activePanel="selectRelease" id="selectRelease">
+				<Panel id="selectRelease">
+					<PanelHeader>Выбор релиза</PanelHeader>
+					<Group>
+						<List>
+							{releases?.map((item) => (
+								<Cell
+									onClick={() => {
+										setRelease(item);
+										setActiveView("analyticsPage");
+									}}
+									after={
+										release.value === item.value ? (
+											<Icon24Done fill="var(--vkui--color_icon_accent)" />
+										) : null
+									}
+								>
+									{item.label}
+								</Cell>
+							))}
+						</List>
+					</Group>
+				</Panel>
+			</View>
+		</Root>
 	);
 }
 
