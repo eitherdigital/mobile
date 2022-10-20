@@ -22,6 +22,8 @@ import { getUser } from "../hooks/Auth";
 import { openLink } from "../hooks/Helpers";
 import { ReleaseComponentType } from "../types";
 import { getSettings } from "../hooks/Settings";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/opacity.css";
 
 export type ReleaseType = {
 	id: number;
@@ -185,10 +187,22 @@ function Release({
 	return (
 		<SimpleCell
 			before={
-				<Avatar
-					mode="image"
+				<LazyLoadImage
 					src={`https://image.either.digital/resize?image=https://api.either.digital${release.cover}&w=120&h=120`}
+					width="48px"
+					height="48px"
+					style={{
+						borderRadius: 4,
+						border: "1px solid var(--vkui--color_image_placeholder_alpha)",
+						objectFit: "cover",
+					}}
+					wrapperClassName="vkuiAvatar Avatar vkuiAvatar--type-image Avatar--type-image vkuiAvatar--sz-48 Avatar--sz-48 vkuiAvatar--shadow Avatar--shadow"
+					effect="opacity"
 				/>
+				// <Avatar
+				// 	mode="image"
+				// 	src={`https://image.either.digital/resize?image=https://api.either.digital${release.cover}&w=120&h=120`}
+				// />
 			}
 			onClick={openMenu}
 			subtitle={release.artists}
